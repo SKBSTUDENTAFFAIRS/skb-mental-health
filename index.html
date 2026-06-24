@@ -194,7 +194,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .data-table tr.crit-row td { background: #FFF5F5; border-left: 5px solid var(--accent); }
 .table-scroll { overflow-x: auto; border-radius: 16px; box-shadow: var(--card-sh); border: 1px solid var(--border); width: 100%; margin-bottom: 16px; }
 
-.badge { inline-block; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 500; }
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 500; }
 .badge-red     { background: #FEE2E2; color: var(--danger); }
 .badge-orange  { background: #FFedd5; color: var(--mid-risk); }
 .badge-green   { background: #D1FAE5; color: var(--success); }
@@ -208,10 +208,21 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .mini-fill     { height: 100%; border-radius: 999px; }
 .mini-pct      { font-size: .82rem; font-weight: 500; min-width: 45px; text-align: right; }
 
+/* ============================  ระบบตรรกะ LOADER คำสั่งหมุนประมวลผลหน้าต่าง  ============================ */
+.loader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+.loader.show { display: flex; }
+.spinner { width: 44px; height: 44px; border: 4px solid #E2E8F0; border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; }
+.loader-msg { font-size: 0.95rem; color: var(--primary); font-weight: 500; }
+
 .page-footer { text-align: center; padding: 16px; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); margin-top: 24px; line-height: 1.5; font-weight: 400; background: #FFF; width: 100%; }
 </style>
 </head>
 <body>
+
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <p class="loader-msg" id="loaderMsg">กำลังดำเนินการ...</p>
+</div>
 
 <div class="app-wrapper">
 
@@ -317,7 +328,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
       <div class="student-banner">
         <div class="lbl">👤 โปรไฟล์ผู้ทำแบบประเมิน</div>
         <div class="info-grid">
-          <div><div class="lbl">ชื่อ-นามสกุล</div><div class="val" id="s2nd_name">—</div></div>
+          <div><div class="lbl">ชื่อ-นามsukุล</div><div class="val" id="s2nd_name">—</div></div>
           <div><div class="lbl">รหัสนักเรียน</div><div class="val" id="s2nd_id">—</div></div>
           <div><div class="lbl">ระดับชั้น/ห้อง</div><div class="val" id="s2nd_class">—</div></div>
           <div><div class="lbl">เลขที่</div><div class="val" id="s2nd_number">—</div></div>
@@ -446,7 +457,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 </div>
 
 <script>
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz1EonZ6j5l8Ci_ySnbzKQjXQvRtyIVOaFBRF2uilEafmJiNAmem5LtZYQ5GjdXJTLP/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwrp1HhgtLC8tVngZZGcsMaMvv5nu7p-VhlTMRj41rtAAeDOYhQd3KFqFg84zhtVNTFgw/exec';
 
 let cfg = null;
 let currentStudent = null;
