@@ -80,7 +80,6 @@ html, body {
 .login-tab.active { color: #4D96FF; background: var(--white); border-bottom: 4px solid #4D96FF; font-size: 0.95rem; font-weight: 500; }
 .login-body { padding: 25px 20px; display: flex; flex-direction: column; align-items: stretch; }
 
-/* อัตราส่วนแบนเนอร์จัตุรัส 1 ต่อ 1 โชว์ตราบรรเทากิจการนักเรียนตรงกลางสมมาตรชัดเจน */
 .login-showcase-img {
   width: 150px; height: 150px; overflow: hidden; border-radius: 24px; margin: 0 auto 20px;
   box-shadow: 0 6px 15px rgba(77, 150, 255, 0.1); background: #F8FAFC;
@@ -129,7 +128,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .alert-info    { background: #E0F2FE; border-left: 5px solid var(--primary); color: #0369A1; }
 
 /* ============================  ส่วนประกอบแผงข้อมูลผู้ประเมินและสเต็ปเปอร์  ============================ */
-.student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 18px; padding: 14px; margin-bottom: 16px; }
+.student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 16px; padding: 14px; margin-bottom: 16px; }
 .student-banner .lbl  { font-size: .72rem; font-weight: 400; color: #16A34A; text-transform: uppercase; text-align: left; }
 .student-banner .val  { font-size: 0.9rem; font-weight: 500; color: #14532D; text-align: left; }
 
@@ -184,7 +183,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
 .stat-card { background: var(--white); border-radius: var(--radius); padding: 22px; box-shadow: var(--card-sh); text-align: center; border: 1px solid rgba(0,0,0,0.01); }
 .stat-val   { font-size: 2.6rem; font-weight: 500; line-height: 1.1; }
-.stat-card c-blue .stat-val { color: var(--primary); }
+.stat-card.c-blue .stat-val { color: var(--primary); }
 .c-green .stat-val { color: var(--success); }
 .c-orange .stat-val { color: var(--mid-risk); }
 .c-red .stat-val { color: var(--danger); }
@@ -218,7 +217,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
   <header class="site-header">
     <div class="school-logo">
-      <img src="https://drive.google.com/uc?export=view&id=1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
+      <img src="https://lh3.googleusercontent.com/d/1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
     </div>
     <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
     <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
@@ -234,7 +233,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         
         <div class="login-body">
           <div class="login-showcase-img">
-            <img src="https://drive.google.com/uc?export=view&id=1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
+            <img src="https://lh3.googleusercontent.com/d/1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
           </div>
 
           <div id="studentFormSection">
@@ -299,7 +298,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
       </div>
 
       <div class="card">
-        <div class="card">
         <div class="card-header">
           <span class="card-icon">🔍</span>
           <div>
@@ -448,7 +446,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 </div>
 
 <script>
-// ⚠️ ให้นำลิงก์ Web App จาก Google Apps Script ที่ได้จากระบบของคุณครูมาวางแทนข้อความด้านล่างนี้ได้เลยครับ ⚠️
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwrp1HhgtLC8tVngZZGcsMaMvv5nu7p-VhlTMRj41rtAAeDOYhQd3KFqFg84zhtVNTFgw/exec';
 
 let cfg = null;
@@ -471,7 +468,7 @@ function showLoader(msg) { $('loaderMsg').textContent = msg || 'กำลัง�
 function hideLoader() { $('loader').classList.remove('show'); }
 function showAlert(id, msg) { const e=$(id); e.textContent=msg; e.classList.add('show'); }
 function hideAlert(id) { $(id).classList.remove('show'); }
-function esc(s) { return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function switchLoginTab(type) {
   hideAlert('loginError'); hideAlert('adminLoginError');
@@ -621,7 +618,7 @@ $('btnLogin').addEventListener('click', () => {
   showLoader('กำลังยืนยันข้อมูลโปรไฟล์ส่วนบุคคล...');
   call('verifyStudent', [id, pw], res => {
     if(res.success) {
-      currentStudent = res.student; if(res.hasHistory) { studentHistoryMap = res.historyData; showAlert('historyAlert2Q', ''); }
+      currentStudent = res.student; if(res.hasHistory) { studentHistoryMap = res.historyData; $('historyAlert2Q').classList.add('show'); }
       call('getAssessmentConfig', [], config => {
         hideLoader(); cfg = config;
         $('s2q_name').textContent = $('s2nd_name').textContent = currentStudent.name;
