@@ -479,7 +479,6 @@ function showLoader(msg) { $('loaderMsg').textContent = msg || 'กำลัง�
 function hideLoader() { $('loader').classList.remove('show'); }
 function showAlert(id, msg) { const e=$(id); e.textContent=msg; e.classList.add('show'); }
 function hideAlert(id) { $(id).classList.remove('show'); }
-// แก้ไขระบบแปลงอักขระพิเศษเพื่อป้องกันข้อมูลแอนิเมชันรวน
 function esc(s) { return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
 
 function switchLoginTab(type) {
@@ -633,6 +632,9 @@ $('btnLogin').addEventListener('click', () => {
       currentStudent = res.student; if(res.hasHistory) { studentHistoryMap = res.historyData; $('historyAlert2Q').classList.add('show'); }
       call('getAssessmentConfig', [], config => {
         hideLoader(); cfg = config;
+        $('s2q_name').textContent = $('s2q_id').textContent = currentStudent.id;
+        $('s2q_class').textContent = currentStudent.class;
+        $('s2q_number').textContent = currentStudent.number;
         $('s2q_name').textContent = $('s2nd_name').textContent = currentStudent.name;
         $('s2q_id').textContent = $('s2nd_id').textContent = currentStudent.id;
         $('s2q_class').textContent = $('s2nd_class').textContent = currentStudent.class;
