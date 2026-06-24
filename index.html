@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ระบบประเมินสุขภาพจิต โรงเรียนชลบุรี สุขบท</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================  RESET และระบบตั้งค่าธีมแอปพลิเคชันมือถือ  ============================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary-gradient: linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%);
+  --btn-gradient: linear-gradient(135deg, #6BCB77 0%, #4D96FF 100%);
+  --admin-gradient: linear-gradient(135deg, #475569 0%, #1E293B 100%);
+  --primary:    #4D96FF;
+  --primary-lt: #6BCB77;
+  --accent:     #FF6B6B;
+  --success:    #6BCB77;
+  --warning:    #FFD93D;
+  --danger:     #FF6B6B;
+  --mid-risk:   #FF9F43;
+  --text:       #2C3E50;
+  --muted:      #95A5A6;
+  --border:     #E2E8F0;
+  --bg:         #F1F5F9;
+  --white:      #FFFFFF;
+  --card-sh:    0 12px 30px rgba(77, 150, 255, 0.1);
+  --radius:     24px;
+}
+
+/* ล็อกขนาดหน้าต่างหลบการบั๊กหน้าจอสั่น เด้ง และรวนของเบราว์เซอร์ LINE ข้ามกรอบไอเฟรม */
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  font-family: 'Prompt', sans-serif; background: var(--bg); color: var(--text); font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-wrapper {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column;
+}
+
+/* ============================  ANIMATIONS  ============================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================  การออกแบบส่วนหัวแอปพลิเคชัน (App Bar)  ============================ */
+.site-header {
+  background: var(--primary-gradient); color: #fff; text-align: center; padding: 25px 20px;
+  border-radius: 0 0 28px 24px; box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
+  animation: fadeInUp 0.5s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.school-logo {
+  width: 75px; height: 75px; margin-bottom: 8px; background: var(--white); border-radius: 16px;
+  padding: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center;
+}
+.school-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.site-header h1 { font-size: 1.35rem; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.site-header p  { font-size: .82rem; opacity: .9; margin-top: 4px; font-weight: 400; }
+
+.page { display: none; }
+.page.active { display: block; animation: fadeInUp 0.4s ease-out; }
+
+.container { width: 100%; max-width: 480px; margin: 0 auto; padding: 14px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; }
+.container-wide { width: 100%; max-width: 1250px; margin: 0 auto; padding: 16px; }
+
+/* ============================  โครงสร้างหน้าล็อกอินแบบโมบายเฟิร์ส  ============================ */
+.login-card { background: var(--white); border-radius: 28px; box-shadow: var(--card-sh); overflow: hidden; margin-top: 10px; border: 1px solid rgba(77, 150, 255, 0.08); }
+.login-tabs { display: flex; background: #F8FAFC; border-bottom: 1px solid var(--border); }
+.login-tab { flex: 1; text-align: center; padding: 15px; font-weight: 400; font-size: 0.9rem; color: var(--muted); cursor: pointer; transition: all 0.2s ease; }
+.login-tab.active { color: #4D96FF; background: var(--white); border-bottom: 4px solid #4D96FF; font-size: 0.95rem; font-weight: 500; }
+.login-body { padding: 25px 20px; display: flex; flex-direction: column; align-items: stretch; }
+
+.login-showcase-img {
+  width: 150px; height: 150px; overflow: hidden; border-radius: 24px; margin: 0 auto 20px;
+  box-shadow: 0 6px 15px rgba(77, 150, 255, 0.1); background: #F8FAFC;
+  display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);
+}
+.login-showcase-img img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 4px; }
+
+.welcome-text { text-align: center; margin-bottom: 20px; }
+.welcome-text h2 { font-size: 1.25rem; color: var(--text); font-weight: 500; }
+.welcome-text p { font-size: 0.85rem; color: var(--muted); margin-top: 5px; font-weight: 400; }
+
+/* ============================  การจัดแต่งรูปทรงกล่องและฟอร์มอินพุต  ============================ */
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-sh); padding: 22px 16px; margin-bottom: 14px; border: 1px solid rgba(0,0,0,0.01); display: flex; flex-direction: column; align-items: stretch; }
+.card-header { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 2px solid var(--bg); }
+.card-icon { font-size: 1.8rem; }
+.card-title { font-size: 1.05rem; font-weight: 500; color: var(--text); }
+.card-sub   { font-size: .82rem; color: var(--muted); margin-top: 2px; font-weight: 400; }
+
+.form-group { margin-bottom: 16px; width: 100%; }
+label.field-label { display: block; font-size: .85rem; font-weight: 500; color: var(--text); margin-bottom: 6px; text-align: left; }
+input[type="text"], input[type="password"] {
+  width: 100%; padding: 12px 14px; border: 2px solid var(--border);
+  border-radius: 14px; font-size: 0.95rem; color: var(--text); font-family: inherit; transition: all 0.3s; background: #F8FAFC;
+}
+input:focus { outline: none; border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(77, 150, 255, 0.12); }
+
+/* ============================  ปุ่มกดสไตล์แอปพลิเคชันรองรับการสัมผัส  ============================ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: 16px; font-size: 0.95rem; font-weight: 500; font-family: inherit; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.02); width: 100%; text-align: center; }
+.btn-block { width: 100%; margin-top: 6px; }
+.btn-primary   { background: var(--primary-gradient); color: #fff; box-shadow: 0 5px 15px rgba(77, 150, 255, 0.2); }
+.btn-primary:not(:disabled):active { transform: scale(0.97); opacity: 0.95; }
+.btn-primary:disabled { background: #CBD5E1; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
+.btn-success   { background: var(--btn-gradient); color: #fff; box-shadow: 0 5px 15px rgba(107, 203, 119, 0.2); }
+.btn-success:active { transform: scale(0.97); }
+.btn-outline   { background: transparent; border: 2px solid var(--primary); color: var(--primary); box-shadow: none; }
+.btn-outline:active { background: rgba(77, 150, 255, 0.08); transform: scale(0.97); }
+.btn-edit      { background: #FF9F43; color: #fff; box-shadow: 0 5px 15px rgba(255, 159, 67, 0.2); }
+.btn-edit:active { transform: scale(0.97); }
+.btn-export    { background: #047857; color: #fff; font-size: .88rem; padding: 10px 18px; border-radius: 12px; width: auto; }
+
+.alert { padding: 12px; border-radius: 16px; font-size: .85rem; margin-bottom: 14px; display: none; line-height: 1.5; font-weight: 400; text-align: center; }
+.alert.show { display: block; }
+.alert-danger  { background: #FEE2E2; border-left: 5px solid var(--danger);  color: #7F1D1D; }
+.alert-success { background: #D1FAE5; border-left: 5px solid var(--success); color: #064E3B; }
+.alert-warning { background: #FEF3C7; border-left: 5px solid var(--warning); color: #78350F; }
+.alert-info    { background: #E0F2FE; border-left: 5px solid var(--primary); color: #0369A1; }
+
+/* ============================  ส่วนประกอบแผงข้อมูลผู้ประเมินและสเต็ปเปอร์  ============================ */
+.student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 18px; padding: 14px; margin-bottom: 16px; }
+.student-banner .lbl  { font-size: .72rem; font-weight: 400; color: #16A34A; text-transform: uppercase; text-align: left; }
+.student-banner .val  { font-size: 0.9rem; font-weight: 500; color: #14532D; text-align: left; }
+
+.stepper { display: flex; margin-bottom: 20px; width: 100%; }
+.step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+.step:not(:last-child)::after { content: ''; position: absolute; top: 16px; left: 60%; width: 80%; height: 3px; background: var(--border); z-index: 0; }
+.step.done::after { background: var(--success); }
+.step.active::after { background: var(--primary); }
+.step-circle { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 500; border: 2px solid var(--border); background: var(--white); z-index: 1; box-shadow: 0 3px 6px rgba(0,0,0,0.03); }
+.step.done .step-circle { background: var(--success); border-color: var(--success); color: #fff; }
+.step.active .step-circle { background: var(--primary); border-color: var(--primary); color: #fff; animation: pulse 1.5s infinite; }
+.step-label { font-size: .7rem; color: var(--muted); margin-top: 6px; text-align: center; font-weight: 400; line-height: 1.3; }
+
+.prog-wrap { margin-bottom: 16px; width: 100%; }
+.prog-bar  { background: #E2E8F0; border-radius: 999px; height: 10px; overflow: hidden; }
+.prog-fill { height: 10px; background: var(--primary-gradient); border-radius: 999px; width: 0%; transition: width 0.4s ease; }
+.prog-text { font-size: .8rem; color: var(--muted); text-align: right; margin-top: 6px; font-weight: 400; }
+
+/* ============================  กล่องคำถามและกฎสไตล์ตัวหนาเข้ม  ============================ */
+.q-card { background: var(--white); border: 2px solid #E2E8F0; border-radius: 20px; padding: 18px 14px; margin-bottom: 14px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.01); width: 100%; }
+.q-card.answered { border-color: #6BCB77; background: #F6FDF8; }
+.q-card.is-critical { border-left: 6px solid var(--accent); }
+.q-card.missing-highlight { border: 2.5px solid var(--danger) !important; background: #FFF5F5 !important; box-shadow: 0 0 15px rgba(255, 107, 107, 0.25) !important; }
+.q-meta  { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.q-num   { font-size: .75rem; font-weight: 400; color: #4D96FF; background: #EBF3FF; padding: 2px 8px; border-radius: 999px; }
+.q-tag   { font-size: .7rem; font-weight: 400; padding: 2px 8px; border-radius: 999px; }
+.tag-crit { background: #FEE2E2; color: var(--danger); }
+
+/* สั่งล็อกตัวหนาเข้มเด่นชัดเฉพาะที่ตัวข้อความคำถามหลักเท่านั้น ส่วนอื่นเป็นตัวผอมบางสบายตาทั้งหมด */
+.q-text  { font-size: 1rem; font-weight: 700; line-height: 1.55; margin-bottom: 12px; color: #2C3E50; text-align: left; }
+.q-hint  { background: #F0F9FF; border: 1px solid #B9E6FE; border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: .85rem; line-height: 1.55; color: #0369A1; text-align: left; font-weight: 400; }
+.q-hint .hint-label { font-weight: 400; color: #0369A1; margin-bottom: 2px; font-size: .78rem; text-transform: uppercase; }
+.q-hint .hint-example { color: #075985; margin-top: 6px; border-top: 1px dashed #BAE6FD; padding-top: 6px; font-style: italic; }
+
+.yn-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.yn-radio, .scale4-radio { display: none; }
+.yn-label { display: flex; align-items: center; justify-content: center; padding: 14px 10px; border-radius: 14px; cursor: pointer; border: 2px solid var(--border); background: var(--white); font-size: 0.95rem; font-weight: 400; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.01); }
+.yn-label.yes:hover { border-color: var(--success); background: #F0FDF4; }
+.yn-radio:checked + .yn-label.yes { border-color: var(--success); background: #6BCB77; color: #fff; font-weight: 400; box-shadow: 0 6px 14px rgba(107, 203, 119, 0.2); }
+.yn-radio:checked + .yn-label.no { border-color: #64748B; background: #64748B; color: #fff; font-weight: 400; box-shadow: 0 6px 14px rgba(100, 116, 139, 0.2); }
+.yn-radio:checked + .ctrl-label.ctrl-no { border-color: var(--danger); background: var(--danger); color: #fff; box-shadow: 0 6px 14px rgba(255, 107, 107, 0.2); }
+
+.scale4-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
+.scale4-label { display: flex; flex-direction: column; align-items: center; padding: 12px 2px; border-radius: 14px; cursor: pointer; border: 2px solid var(--border); background: var(--white); font-size: .75rem; text-align: center; gap: 6px; font-weight: 400; transition: all 0.2s; line-height: 1.3; }
+.scale4-label .score-dot { width: 24px; height: 24px; border-radius: 50%; background: #E2E8F0; color: var(--muted); font-size: .85rem; font-weight: 500; line-height: 24px; text-align: center; }
+.scale4-radio:checked + .scale4-label { border-color: var(--primary); background: #4D96FF; color: #fff; box-shadow: 0 6px 14px rgba(77, 150, 255, 0.2); }
+.scale4-radio:checked + .scale4-label .score-dot { background: var(--white); color: var(--primary); }
+
+@media (max-width: 480px) { .scale4-options { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+
+/* ============================  ADMIN CONSOLE UI  ============================ */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
+.stat-card { background: var(--white); border-radius: var(--radius); padding: 22px; box-shadow: var(--card-sh); text-align: center; border: 1px solid rgba(0,0,0,0.01); }
+.stat-val   { font-size: 2.6rem; font-weight: 500; line-height: 1.1; }
+.stat-label { font-size: .85rem; color: var(--muted); margin-top: 6px; font-weight: 400; }
+.c-blue .stat-val { color: var(--primary); }
+.c-green .stat-val { color: var(--success); }
+.c-orange .stat-val { color: var(--mid-risk); }
+.c-red .stat-val { color: var(--danger); }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.data-table th { background: var(--primary-gradient); color: #fff; padding: 12px 14px; text-align: left; white-space: nowrap; font-weight: 500; }
+.data-table td { padding: 12px 14px; border-bottom: 1px solid #E2E8F0; }
+.data-table tr.crit-row td { background: #FFF5F5; border-left: 5px solid var(--accent); }
+.table-scroll { overflow-x: auto; border-radius: 16px; box-shadow: var(--card-sh); border: 1px solid var(--border); width: 100%; margin-bottom: 16px; }
+
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 500; }
+.badge-red     { background: #FEE2E2; color: var(--danger); }
+.badge-orange  { background: #FFedd5; color: var(--mid-risk); }
+.badge-green   { background: #D1FAE5; color: var(--success); }
+.badge-gray    { background: #F1F5F9; color: var(--muted); }
+
+.section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; width: 100%; }
+.section-title   { font-size: 1.15rem; font-weight: 500; color: var(--text); }
+
+.mini-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.mini-bar      { flex: 1; height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
+.mini-fill     { height: 100%; border-radius: 999px; }
+.mini-pct      { font-size: .82rem; font-weight: 500; min-width: 45px; text-align: right; }
+
+.page-footer { text-align: center; padding: 16px; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); margin-top: 24px; line-height: 1.5; font-weight: 400; background: #FFF; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <header class="site-header">
+    <div class="school-logo">
+      <img src="https://drive.google.com/uc?export=view&id=1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
+    </div>
+    <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
+    <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
+  </header>
+
+  <div class="page active" id="pageLanding">
+    <div class="container">
+      <div class="login-card">
+        <div class="login-tabs">
+          <div class="login-tab active" id="tabStudent" onclick="switchLoginTab('student')">👤 สำหรับนักเรียน</div>
+          <div class="login-tab" id="tabAdmin" onclick="switchLoginTab('admin')">🔐 สำหรับผู้ดูแลระบบ</div>
+        </div>
+        
+        <div class="login-body">
+          <div class="login-showcase-img">
+            <img src="https://drive.google.com/uc?export=view&id=1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
+          </div>
+
+          <div id="studentFormSection">
+            <div class="welcome-text">
+              <h2>เข้าทำแบบประเมินตนเอง</h2>
+              <p>กรุณากรอกรหัสประจำตัวและรหัสผ่านเพื่อเริ่มต้นทำรายการ</p>
+            </div>
+            <div class="alert alert-danger" id="loginError"></div>
+            <div class="form-group">
+              <label class="field-label" for="fStudentId">รหัสประจำตัวนักเรียน</label>
+              <input type="text" id="fStudentId" placeholder="กรอกรหัสประจำตัวนักเรียน" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="fPassword">รหัสผ่านสำหรับเข้าใช้งาน</label>
+              <input type="password" id="fPassword" placeholder="กรอกรหัสผ่านของคุณ">
+            </div>
+            <button class="btn btn-primary btn-block" id="btnLogin" style="padding:15px; font-size:1rem;">เข้าสู่ระบบเพื่อทำแบบประเมิน</button>
+          </div>
+
+          <div id="adminFormSection" style="display:none;">
+            <div class="welcome-text">
+              <h2>ระบบควบคุมแอดมิน</h2>
+              <p>กรุณากรอกรหัสผ่านความปลอดภัยแอดมิน เพื่อเปิดระบบรายงานแดชบอร์ด</p>
+            </div>
+            <div class="alert alert-danger" id="adminLoginError"></div>
+            <div class="form-group">
+              <label class="field-label" for="fAdminPass">รหัสผ่านแอดมิน (Admin Password)</label>
+              <input type="password" id="fAdminPass" placeholder="กรอกรหัสผ่านควบคุม">
+            </div>
+            <button class="btn btn-primary btn-block" id="btnAdminLogin" style="padding:15px; background:var(--admin-gradient); font-size:1rem;">ยืนยันสิทธิ์เข้าหน้าแดชบอร์ด</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info show" style="margin-top:15px; text-align:center; border:none; box-shadow:var(--card-sh);">
+        ℹ️ มาตรฐานการทดสอบทางจิตวิทยา อ้างอิงตามเกณฑ์มาตรฐานอย่างเป็นทางการของ <strong>กรมสุขภาพจิต กระทรวงสาธารณสุข ประเทศไทย</strong><br>
+        <a href="https://www.dmh.go.th/" target="_blank" style="color:#4D96FF; font-weight:500; text-decoration:none; display:inline-block; margin-top:6px;">🔗 เยี่ยมชมเว็บไซต์กรมสุขภาพจิต</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page2Q">
+    <div class="container">
+      <div class="student-banner">
+        <div class="lbl">👤 โปรไฟล์ผู้ทำแบบประเมิน</div>
+        <div class="info-grid">
+          <div><div class="lbl">ชื่อ-นามสกุล</div><div class="val" id="s2q_name">—</div></div>
+          <div><div class="lbl">รหัสนักเรียน</div><div class="val" id="s2q_id">—</div></div>
+          <div><div class="lbl">ระดับชั้น/ห้อง</div><div class="val" id="s2q_class">—</div></div>
+          <div><div class="lbl">เลขที่</div><div class="val" id="s2q_number">—</div></div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning" id="historyAlert2Q">
+        📝 คุณเคยส่งข้อมูลแบบประเมินแล้ว ระบบดึงคำตอบค้างเก่าของคุณมาให้เรียบร้อย คุณสามารถแก้ไขแล้วกดส่งเพื่ออัปเดตประวัติได้ครับ
+      </div>
+
+      <div class="stepper">
+        <div class="step active"><div class="step-circle">1</div><div class="step-label">2Q<br>คัดกรองเบื้องต้น</div></div>
+        <div class="step" id="step_2nd"><div class="step-circle">2</div><div class="step-label">ประเมินฟูลสเกล<br>มัลติมิติเชิงลึก</div></div>
+        <div class="step"><div class="step-circle">✓</div><div class="step-label">เสร็จสิ้น</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🔍</span>
+          <div>
+            <div class="card-title">แบบคัดกรองโรคซึมเศร้าขั้นต้น (2Q)</div>
+            <div class="card-sub">เกณฑ์วัดประเมินในระยะ 2 สัปดาห์ที่ผ่านมาจนถึงปัจจุบัน</div>
+          </div>
+        </div>
+        <div class="alert alert-danger" id="err2Q"></div>
+        <div id="q2Container"></div>
+        <button class="btn btn-primary btn-block" id="btn2QSubmit" disabled style="padding:15px;">ส่งคำตอบและดำเนินการต่อ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pageSecond">
+    <div class="container">
+      <div class="student-banner">
+        <div class="lbl">👤 โปรไฟล์ผู้ทำแบบประเมิน</div>
+        <div class="info-grid">
+          <div><div class="lbl">ชื่อ-นามสกุล</div><div class="val" id="s2nd_name">—</div></div>
+          <div><div class="lbl">รหัสนักเรียน</div><div class="val" id="s2nd_id">—</div></div>
+          <div><div class="lbl">ระดับชั้น/ห้อง</div><div class="val" id="s2nd_class">—</div></div>
+          <div><div class="lbl">เลขที่</div><div class="val" id="s2nd_number">—</div></div>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <div class="step done"><div class="step-circle">✓</div><div class="step-label">2Q<br>คัดกรองเบื้องต้น</div></div>
+        <div class="step active"><div class="step-circle">2</div><div class="step-label">ประเมินฟูลสเกล<br>มัลติมิติเชิงลึก</div></div>
+        <div class="step"><div class="step-circle">✓</div><div class="step-label">เสร็จสิ้น</div></div>
+      </div>
+
+      <div class="alert alert-warning show" id="alertSecondHeader">
+        ⚠️ ระบบพบสัญญาณเตือนขั้นต้น โปรดตอบแบบสอบถามเพิ่มเติมตามความเป็นจริงเพื่อประโยชน์ในการดูแลช่วยเหลือต่อไป
+      </div>
+
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="prog2ndFill"></div></div>
+        <div class="prog-text" id="prog2ndText">ตอบแล้ว 0 ข้อ</div>
+      </div>
+      <div class="alert alert-danger" id="err2nd"></div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-icon">🧠</span><div><div class="card-title">แบบประเมินภาวะซึมเศร้าเชิงลึก (PHQ-A) — 9 ข้อ</div></div></div>
+        <div class="legend-bar"><span class="legend-item">0 = ไม่มีเลย</span><span class="legend-item">1 = มีบางวัน</span><span class="legend-item">2 = มีมากกว่า 7 วัน</span><span class="legend-item">3 = มีแทบทุกวัน</span></div>
+        <div id="phqaContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-icon">😰</span><div><div class="card-title">แบบประเมินดัชนีความเครียดสะสม (ST5) — 5 ข้อ</div></div></div>
+        <div class="legend-bar"><span class="legend-item">0 = แทบไม่มี</span><span class="legend-item">1 = เป็นบางครั้ง</span><span class="legend-item">2 = เป็นบ่อยครั้ง</span><span class="legend-item">3 = เป็นประจำ</span></div>
+        <div id="st5Container"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-icon">🌀</span><div><div class="card-title">แบบประเมินภาวะตื่นตระหนกและวิตกกังวล (GAD-2) — 2 ข้อ</div></div></div>
+        <div class="legend-bar"><span class="legend-item">0 = ไม่มีเลย</span><span class="legend-item">1 = มีบางวัน</span><span class="legend-item">2 = มีมากกว่า 7 วัน</span><span class="legend-item">3 = มีแทบทุกวัน</span></div>
+        <div id="gad2Container"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-icon">🤝</span><div><div class="card-title">แบบประเมินสภาพแวดล้อมเชิงพฤติกรรมและสังคม — 2 ข้อ</div></div></div>
+        <div id="socContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-icon">🆘</span><div><div class="card-title">แบบประเมินดักจับความเสี่ยงวิกฤต (8Q) — 8 ข้อ</div></div></div>
+        <div id="q8Container"></div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn2ndSubmit" style="padding:16px; font-size:1.05rem;">✅ ยืนยันการส่งข้อมูลประเมินทั้งหมดเข้าระบบหลังบ้าน</button>
+    </div>
+  </div>
+
+  <div class="page" id="pageSuccess">
+    <div class="container">
+      <div class="card" style="text-align:center; padding:40px 20px; border-radius:24px;">
+        <div style="font-size:5rem;">✅</div>
+        <h2 style="color:var(--success); font-size:1.5rem; margin-top:12px; font-weight:500;">ระบบทำการบันทึกข้อมูลเรียบร้อย</h2>
+        <p style="color:var(--muted); margin-top:10px; line-height:1.6; font-weight:400;">ข้อมูลประเมินสุขภาพจิตของท่านเข้าสู่ฐานข้อมูลฝ่ายแนะแนวอย่างปลอดภัยเรียบร้อยแล้ว<br>ขอบคุณสำหรับความร่วมมือเพื่อดูแลช่วยเหลือนักเรียน</p>
+        
+        <button class="btn btn-edit btn-block" onclick="handleGoBackToEdit()" style="padding:14px; border-radius:14px; font-size:1.05rem; margin-top:20px;">✏️ ต้องการแก้ไขข้อมูลคำตอบคำถาม</button>
+        <button class="btn btn-success btn-block" onclick="handleLogout()" style="padding:14px; border-radius:14px; font-size:1.05rem; margin-top:10px;">ออกจากระบบอย่างปลอดภัย</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pageAdmin">
+    <div class="container-wide">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
+        <div>
+          <h2 style="font-size:1.4rem; color:var(--text); font-weight:500;">📊 คอนโซลควบคุมระบบดูแลช่วยเหลือแอดมิน (Admin Console)</h2>
+          <p style="font-size:.88rem; color:var(--muted); font-weight:400;">โรงเรียนชลบุรี "สุขบท" | ระบบรายงานผลกลุ่มเสี่ยงและสถิติการดำเนินงานรายห้องเรียน</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" id="btnRefresh" style="background:#475569; box-shadow:none;">🔄 รีเฟรชฐานข้อมูล</button>
+          <button class="btn btn-outline" onclick="handleLogout()">ออกจากหน้าควบคุม</button>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="stat-card c-blue"><div class="stat-val" id="statTotal">—</div><div class="stat-label">จำนวนนักเรียนทั้งโรงเรียน</div></div>
+        <div class="stat-card c-green"><div class="stat-val" id="statDone">—</div><div class="stat-label">ส่งแบบประเมินสำเร็จแล้ว</div></div>
+        <div class="stat-card c-orange"><div class="stat-val" id="statRisk">—</div><div class="stat-label">เคสเฝ้าระวัง (เสี่ยงปานกลาง)</div></div>
+        <div class="stat-card c-red"><div class="stat-val" id="statCritical">—</div><div class="stat-label">🚨 เคสฉุกเฉินวิกฤต (เสี่ยงรุนแรง)</div></div>
+      </div>
+
+      <div class="card">
+        <div class="section-heading">
+          <div class="section-title">🔴 ตารางรายชื่อเคสนักเรียนกลุ่มเสี่ยง (เรียงตามลำดับความรุนแรงวิกฤต)</div>
+          <button class="btn btn-export" id="btnExport">📥 ส่งออกรายงานกลุ่มเสี่ยง (Excel/CSV)</button>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>ระดับชั้น/ห้อง</th><th>เลขที่</th>
+                <th>ผล 2Q</th><th>PHQ-A (ซึมเศร้า)</th><th>ST5 (เครียด)</th><th>GAD-2 (วิตกกังวล)</th><th>ปัจจัยสังคม</th><th>8Q (ทำร้ายตัวเอง)</th>
+                <th>ประเมินรวม</th><th>รายละเอียดพฤติกรรม</th><th>เวลาบันทึกข้อมูล</th>
+              </tr>
+            </thead>
+            <tbody id="riskBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-heading"><div class="section-title">📈 แดชบอร์ดติดตามความคืบหน้าการส่งงานแยกรายห้องเรียน (ทั้งโรงเรียน)</div></div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr><th>ระดับชั้นและห้องเรียน</th><th>รายชื่อทั้งหมดในชีต</th><th>ดำเนินงานส่งแล้ว</th><th>ค้างส่งแบบประเมิน</th><th style="min-width:220px;">สัดส่วนความคืบหน้าคิดเป็นเปอร์เซ็นต์</th></tr>
+            </thead>
+            <tbody id="progBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน<br>
+    พัฒนาเว็บโดย นายมีโชค ผลชู
+  </div>
+
+</div>
+
+<script>
+// ⚠️ ให้คุณครูนำลิงก์ Web App จาก Google Apps Script มาวางแทนที่ข้อความด้านล่างนี้ได้เลยครับ ⚠️
+const BACKEND_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE';
+
+let cfg = null;
+let currentStudent = null;
+let answers2Q = {};
+let answersSecond = {};
+let totalSecond = 0;
+let _adminData = null;
+let studentHistoryMap = null; 
+
+const $ = id => document.getElementById(id);
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  $(id).classList.add('active');
+  document.querySelector('.app-wrapper').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLoader(msg) { $('loaderMsg').textContent = msg || 'กำลังสื่อสารกับฐานข้อมูล...'; $('loader').classList.add('show'); }
+function hideLoader() { $('loader').classList.remove('show'); }
+function showAlert(id, msg) { const e=$(id); e.textContent=msg; e.classList.add('show'); }
+function hideAlert(id) { $(id).classList.remove('show'); }
+function esc(s) { return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
+
+function switchLoginTab(type) {
+  hideAlert('loginError'); hideAlert('adminLoginError');
+  if (type === 'student') {
+    $('tabStudent').classList.add('active'); $('tabAdmin').classList.remove('active');
+    $('studentFormSection').style.display = 'block'; $('adminFormSection').style.display = 'none';
+  } else {
+    $('tabAdmin').classList.add('active'); $('tabStudent').classList.remove('active');
+    $('adminFormSection').style.display = 'block'; $('studentFormSection').style.display = 'none';
+  }
+}
+
+function handleLogout() {
+  currentStudent = null; answers2Q = {}; answersSecond = {}; _adminData = null; studentHistoryMap = null;
+  $('fStudentId').value = ''; $('fPassword').value = ''; $('fAdminPass').value = '';
+  hideAlert('loginError'); hideAlert('adminLoginError'); hideAlert('err2Q'); hideAlert('err2nd');
+  $('historyAlert2Q').classList.remove('show');
+  showPage('pageLanding');
+}
+
+function handleGoBackToEdit() { showPage('page2Q'); }
+
+// รื้อฟังก์ชันแกนกลางใหม่: เปลี่ยนระบบ RPC โลคอลมาใช้การยิง Fetch API ส่งข้อมูลข้ามเซิร์ฟเวอร์แบบเสถียร
+function call(fn, args, cb) {
+  if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
+    hideLoader(); alert('ระบบขัดข้อง: ครูผู้ดูแลระบบยังไม่ได้กรอกลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
+  }
+  
+  // ใช้โหมด Text/Plain เพื่อหลบเลี่ยงการตรวจสอบ CORS Preflight OPTIONS บนเบราว์เซอร์เก่า ช่วยให้ส่งข้อมูลผ่านมือถือได้เร็วที่สุด
+  fetch(BACKEND_URL, {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: fn, arguments: args })
+  })
+  .then(response => response.json())
+  .then(res => { cb(res); })
+  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน: ' + err.message); });
+}
+
+function buildYNCard(q, num, prefix) {
+  const isCrit = q.isCritical ? 'is-critical' : (q.type === 'yesno_ctrl' ? 'is-conditional' : '');
+  return `
+  <div class="q-card ${isCrit}" id="card_${q.id}">
+    <div class="q-meta"><span class="q-num">${prefix} ข้อที่ ${num}</span></div>
+    <div class="q-text">${q.text}</div>
+    <div class="q-hint">
+      <div class="hint-label">📖 คำอธิบายพฤติกรรม</div><div>${q.description}</div>
+      <div class="hint-label class-example">💬 สถานการณ์ตัวอย่าง</div><div>${q.example}</div>
+    </div>
+    <div class="yn-options">
+      ${q.type === 'yesno_ctrl' ? `
+        <input type="radio" name="${q.id}" id="${q.id}_yes" value="0" class="yn-radio"><label for="${q.id}_yes" class="yn-label yes">✅ ควบคุมตนเองได้</label>
+        <input type="radio" name="${q.id}" id="${q.id}_no" value="8" class="yn-radio"><label for="${q.id}_no" class="yn-label no ctrl-label ctrl-no">❌ ควบคุมตนเองไม่ได้</label>
+      ` : `
+        <input type="radio" name="${q.id}" id="${q.id}_yes" value="1" class="yn-radio"><label for="${q.id}_yes" class="yn-label yes">✅ ใช่ / มีอาการ</label>
+        <input type="radio" name="${q.id}" id="${q.id}_no" value="0" class="yn-radio"><label for="${q.id}_no" class="yn-label no">❌ ไม่ใช่ / ไม่มี</label>
+      `}
+    </div>
+  </div>`;
+}
+
+function buildScale4Card(q, num, prefix) {
+  const opts = q.options.map((o, i) => `
+    <input type="radio" name="${q.id}" id="${q.id}_${i}" value="${q.scores[i]}" class="scale4-radio">
+    <label for="${q.id}_${i}" class="scale4-label"><span class="score-dot">${q.scores[i]}</span>${o}</label>
+  `).join('');
+  return `
+  <div class="q-card ${q.isCritical?'is-critical':''}" id="card_${q.id}">
+    <div class="q-meta"><span class="q-num">${prefix} ข้อที่ ${num}</span>${q.isCritical?'<span class="q-tag tag-crit">⚠️ ข้อวิกฤตเฝ้าระวังสูงสุด</span>':''}</div>
+    <div class="q-text">${q.text}</div>
+    <div class="q-hint">
+      <div class="hint-label">📖 คำอธิบายพฤติกรรม</div><div>${q.description}</div>
+      <div class="hint-label">💬 สถานการณ์ตัวอย่าง</div><div>${q.example}</div>
+    </div>
+    <div class="scale4-options">${opts}</div>
+  </div>`;
+}
+
+function preFillAnswersIfAny(questions, answersTargetMap) {
+  if (!studentHistoryMap) return;
+  questions.forEach(q => {
+    if (studentHistoryMap[q.id] !== undefined) {
+      let val = studentHistoryMap[q.id]; answersTargetMap[q.id] = val;
+      let radios = document.getElementsByName(q.id);
+      for(let i=0; i<radios.length; i++) {
+        if(radios[i].value === val) { radios[i].checked = true; let card = $('card_' + q.id); if(card) card.classList.add('answered'); break; }
+      }
+    }
+  });
+}
+
+function render2Q() {
+  $('q2Container').innerHTML = cfg.Q2.map((q, i) => buildYNCard(q, i+1, '2Q')).join('');
+  preFillAnswersIfAny(cfg.Q2, answers2Q);
+  $('btn2QSubmit').disabled = !cfg.Q2.every(el => answers2Q[el.id] !== undefined);
+  cfg.Q2.forEach(q => {
+    document.querySelectorAll(`input[name="${q.id}"]`).forEach(r => {
+      r.addEventListener('change', () => {
+        answers2Q[q.id] = r.value; $('card_'+q.id).classList.add('answered'); $('card_'+q.id).classList.remove('missing-highlight'); 
+        $('btn2QSubmit').disabled = !cfg.Q2.every(el => answers2Q[el.id] !== undefined);
+      });
+    });
+  });
+}
+
+function renderSecond() {
+  $('phqaContainer').innerHTML = cfg.PHQA.map((q, i) => buildScale4Card(q, i+1, 'PHQ-A')).join('');
+  $('st5Container').innerHTML  = cfg.ST5.map((q,  i) => buildScale4Card(q, i+1, 'ST5')).join('');
+  $('gad2Container').innerHTML = cfg.GAD2.map((q, i) => buildScale4Card(q, i+1, 'GAD-2')).join('');
+  $('socContainer').innerHTML  = cfg.SOC.map((q,  i) => buildYNCard(q, i+1, 'สังคม')).join('');
+  $('q8Container').innerHTML   = cfg.Q8.map((q,   i) => buildYNCard(q, i+1, '8Q')).join('');
+  const allQs = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8]; totalSecond = allQs.length;
+  preFillAnswersIfAny(allQs, answersSecond);
+  allQs.forEach(q => {
+    document.querySelectorAll(`input[name="${q.id}"]`).forEach(r => {
+      r.addEventListener('change', () => {
+        answersSecond[q.id] = r.value; $('card_'+q.id).classList.add('answered'); $('card_'+q.id).classList.remove('missing-highlight'); 
+        if (q.id === '8q_3') { const has = r.value === '1'; $('card_8q_3sub').style.display = has ? '' : 'none'; if (!has) { answersSecond['8q_3sub'] = '0'; } }
+        updateSecondProgress();
+      });
+    });
+  });
+  if (answersSecond['8q_3'] === '1') { $('card_8q_3sub').style.display = ''; } else { $('card_8q_3sub').style.display = 'none'; answersSecond['8q_3sub'] = '0'; }
+  updateSecondProgress();
+}
+
+function updateSecondProgress() {
+  const show3sub = answersSecond['8q_3'] === '1';
+  const countable = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8].filter(q => q.id !== '8q_3sub' || show3sub);
+  const done = countable.filter(q => answersSecond[q.id] !== undefined).length; const total = countable.length; const pct = Math.round(done/total*100);
+  $('prog2ndFill').style.width = pct+'%'; $('prog2ndText').textContent = `คืบหน้าในการตอบคำถาม ${done} จาก ${total} ข้อ (${pct}%)`;
+}
+
+function validateUnanswered(questions, answersMap) {
+  let firstMissingCard = null; const show3sub = answersMap['8q_3'] === '1';
+  questions.forEach(q => {
+    if (q.id === '8q_3sub' && !show3sub) return;
+    const card = $('card_' + q.id);
+    if (answersMap[q.id] === undefined) { if (card) { card.classList.add('missing-highlight'); if (!firstMissingCard) firstMissingCard = card; } } 
+    else { if (card) card.classList.remove('missing-highlight'); }
+  });
+  if (firstMissingCard) { firstMissingCard.scrollIntoView({ behavior: 'smooth', block: 'center' }); return false; }
+  return true;
+}
+
+$('btnLogin').addEventListener('click', () => {
+  const id = $('fStudentId').value.trim(); const pw = $('fPassword').value.trim();
+  if(!id || !pw) { showAlert('loginError','กรุณากรอกรหัสประจำตัวและรหัสผ่านให้ครบถ้วน'); return; }
+  showLoader('กำลังยืนยันข้อมูลโปรไฟล์ส่วนบุคคล...');
+  call('verifyStudent', [id, pw], res => {
+    if(res.success) {
+      currentStudent = res.student; if(res.hasHistory) { studentHistoryMap = res.historyData; showAlert('historyAlert2Q', ''); }
+      call('getAssessmentConfig', [], config => {
+        hideLoader(); cfg = config;
+        $('s2q_name').textContent = $('s2nd_name').textContent = currentStudent.name;
+        $('s2q_id').textContent = $('s2nd_id').textContent = currentStudent.id;
+        $('s2q_class').textContent = $('s2nd_class').textContent = currentStudent.class;
+        $('s2q_number').textContent = $('s2nd_number').textContent = currentStudent.number;
+        showPage('page2Q'); render2Q();
+      });
+    } else { hideLoader(); showAlert('loginError', res.error); }
+  });
+});
+
+$('btn2QSubmit').addEventListener('click', () => {
+  if (!validateUnanswered(cfg.Q2, answers2Q)) { showAlert('err2Q', 'กรุณาตอบคำถามให้ครบทุกข้อ ระบบได้เลื่อนหน้าจอไปยังข้อที่ค้างอยู่ด้วยกรอบสีแดง'); return; }
+  hideAlert('err2Q'); const hasRisk = cfg.Q2.some(q => answers2Q[q.id] === '1');
+  if (hasRisk) { renderSecond(); showPage('pageSecond'); } 
+  else {
+    showLoader('กำลังส่งบันทึกข้อมูลเกณฑ์ปกติลงฐานข้อมูล...');
+    call('saveData', [currentStudent, answers2Q, null], res => { hideLoader(); if(res.success) showPage('pageSuccess'); else { alert(res.error); } });
+  }
+});
+
+$('btn2ndSubmit').addEventListener('click', () => {
+  const allQs = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8];
+  if (!validateUnanswered(allQs, answersSecond)) { showAlert('err2nd', 'กรุณาตอบคำถามให้ครบถ้วนทุกช่อง ระบบได้เลื่อนหน้าจอไปยังข้อที่ค้างอยู่ด้วยกรอบสีแดงเรียบร้อย'); return; }
+  hideAlert('err2nd'); showLoader('กำลังวิเคราะห์ประมวลผลความปลอดภัยและจัดเก็บข้อมูล...');
+  call('saveData', [currentStudent, answers2Q, answersSecond], res => { hideLoader(); if(res.success) showPage('pageSuccess'); else { showAlert('err2nd', res.error); } });
+});
+
+$('btnAdminLogin').addEventListener('click', () => {
+  const pw = $('fAdminPass').value.trim(); if(!pw) { showAlert('adminLoginError','กรุณากรอกรหัสผ่านควบคุมความปลอดภัยแอดมิน'); return; }
+  showLoader('กำลังเข้าสู่ระบบและคำนวณสถิติแดชบอร์ด...');
+  call('verifyAdmin', [pw], res => {
+    if(res.success) {
+      call('getAdminData', [], data => {
+        hideLoader(); if(!data.success) { alert(data.error); return; }
+        showPage('pageAdmin'); _adminData = data;
+        $('statTotal').textContent = data.summary.totalStudents; $('statDone').textContent = data.summary.totalDone; $('statRisk').textContent = data.summary.totalAtRisk; $('statCritical').textContent = data.summary.totalCritical;
+        const rb = $('riskBody'); rb.innerHTML = '';
+        if(!data.atRisk.length) { rb.innerHTML = `<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--muted);font-weight:bold;">✅ ผ่านเกณฑ์ประเมินระดับปลอดภัย ไม่พบข้อมูลกลุ่มเสี่ยงในปัจจุบัน</td></tr>`; } 
+        else {
+          data.atRisk.forEach((r, i) => {
+            const tr = document.createElement('tr'); if(r.isCritical) tr.className = 'crit-row';
+            tr.innerHTML = `<td>${i+1}${r.isCritical?' 🚨':''}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.class)}</td><td>${esc(r.number)}</td><td><span class="badge badge-orange">เสี่ยง</span></td><td>${badgeFor(r.phqaStatus)} <small>${r.phqaScore}/27</small></td><td>${badgeFor(r.st5Status)} <small>${r.st5Score}/15</small></td><td>${badgeFor(r.gad2Status)} <small>${r.gad2Score}/6</small></td><td>${badgeFor(r.socStatus)}</td><td>${badgeFor(r.q8Status)} <small>${r.q8Score}คะแนน</small></td><td>${r.overall === 'เสี่ยงรุนแรง' ? '<span class="badge badge-red">🔴 เสี่ยงรุนแรงวิกฤต</span>' : '<span class="badge badge-orange">🟠 เสี่ยงปานกลาง</span>'}</td><td style="font-size:.8rem; max-width:250px; font-weight:600;">${esc(r.detail)}</td><td><small>${esc(r.timestamp)}</small></td>`;
+            rb.appendChild(tr);
+          });
+        }
+        const pb = $('progBody'); pb.innerHTML = '';
+        data.progress.forEach(row => {
+          const col = row.percent >= 80 ? 'var(--success)' : row.percent >= 50 ? 'var(--warning)' : 'var(--accent)';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td><strong>ห้อง ${esc(row.class)}</strong></td><td>${row.total} คน</td><td>${row.done} คน</td><td>${row.total - row.done} คน</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${row.percent}%;background:${col};"></div></div><span class="mini-pct" style="color:${col};">${row.percent}%</span></div></td>`;
+          pb.appendChild(tr);
+        });
+      });
+    } else { hideLoader(); showAlert('adminLoginError', res.error); }
+  });
+});
+
+$('btnRefresh').addEventListener('click', () => { location.reload(); });
+function badgeFor(s) { if (!s || s === 'ไม่ได้ทำ' || s === 'ปกติ') return '<span class="badge badge-green">ปกติ</span>'; if (s.includes('รุนแรง') || s.includes('วิกฤต') || s.includes('เสี่ยงรุนแรง')) return `<span class="badge badge-red">${esc(s)}</span>`; return `<span class="badge badge-orange">${esc(s)}</span>`; }
+
+$('btnExport').addEventListener('click', () => {
+  if (!_adminData || !_adminData.atRisk.length) return;
+  const headers = ['ลำดับที่','รหัสประจำตัว','ชื่อ-นามสกุล','ห้องเรียน','เลขที่','คัดกรอง2Q','ภาวะซึมเศร้า','คะแนนซึมเศร้า','ภาวะความเครียด','คะแนนความเครียด','ภาวะวิตกกังวล','คะแนนวิตกกังวล','ปัญหาปัจจัยสังคม','ความเสี่ยงทำร้ายตัวเอง','คะแนน8Q','ความเสี่ยงภาพรวม','รายละเอียดพฤติกรรมสรุป','วันเวลาที่ระบบประเมิน'];
+  const rows = _adminData.atRisk.map((r,i) => [i+1,r.id,r.name,r.class,r.number,'เสี่ยง',r.phqaStatus,r.phqaScore,r.st5Status,r.st5Score,r.gad2Status,r.gad2Score,r.socStatus,r.q8Status,r.q8Score,r.overall,r.detail,r.timestamp]);
+  const csv = '\uFEFF' + [headers,...rows].map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'รายงานเคสกลุ่มเสี่ยงนักเรียน_สุขบท.csv'; a.click();
+});
+</script>
+</body>
+</html>
