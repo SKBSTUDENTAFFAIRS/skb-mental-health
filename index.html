@@ -22,7 +22,7 @@
   --danger:     #FF6B6B;
   --mid-risk:   #FF9F43;
   --text:       #2C3E50;
-  --muted:      #95A5A6;
+  --muted:      --muted:      #95A5A6;
   --border:     #E2E8F0;
   --bg:         #F1F5F9;
   --white:      #FFFFFF;
@@ -30,7 +30,6 @@
   --radius:     24px;
 }
 
-/* ล็อกขนาดหน้าต่างหลบการบั๊กหน้าจอสั่น เด้ง และรวนของเบราว์เซอร์ LINE ข้ามกรอบไอเฟรม */
 html, body {
   width: 100%; height: 100%; overflow: hidden;
   font-family: 'Prompt', sans-serif; background: var(--bg); color: var(--text); font-size: 16px;
@@ -158,7 +157,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .q-tag   { font-size: .7rem; font-weight: 400; padding: 2px 8px; border-radius: 999px; }
 .tag-crit { background: #FEE2E2; color: var(--danger); }
 
-/* สั่งล็อกตัวหนาเข้มเด่นชัดเฉพาะที่ตัวข้อความคำถามหลักเท่านั้น ส่วนอื่นเป็นตัวผอมบางสบายตาทั้งหมด */
 .q-text  { font-size: 1rem; font-weight: 700; line-height: 1.55; margin-bottom: 12px; color: #2C3E50; text-align: left; }
 .q-hint  { background: #F0F9FF; border: 1px solid #B9E6FE; border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: .85rem; line-height: 1.55; color: #0369A1; text-align: left; font-weight: 400; }
 .q-hint .hint-label { font-weight: 400; color: #0369A1; margin-bottom: 2px; font-size: .78rem; text-transform: uppercase; }
@@ -219,7 +217,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
   <header class="site-header">
     <div class="school-logo">
-      <img src="https://drive.google.com/uc?export=view&id=1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
+      <img src="https://lh3.googleusercontent.com/d/1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
     </div>
     <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
     <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
@@ -235,7 +233,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         
         <div class="login-body">
           <div class="login-showcase-img">
-            <img src="https://drive.google.com/uc?export=view&id=1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
+            <img src="https://lh3.googleusercontent.com/d/1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
           </div>
 
           <div id="studentFormSection">
@@ -448,7 +446,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 </div>
 
 <script>
-// ⚠️ ให้คุณครูนำลิงก์ Web App จาก Google Apps Script มาวางแทนที่ข้อความด้านล่างนี้ได้เลยครับ ⚠️
+// ⚠️ ห้ามลืม! นำลิงก์ Web App จาก Google Apps Script ของคุณครูมาวางแทนที่ข้อความด้านล่างนี้ใน GitHub นะครับ ⚠️
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwrp1HhgtLC8tVngZZGcsMaMvv5nu7p-VhlTMRj41rtAAeDOYhQd3KFqFg84zhtVNTFgw/exec';
 
 let cfg = null;
@@ -494,13 +492,10 @@ function handleLogout() {
 
 function handleGoBackToEdit() { showPage('page2Q'); }
 
-// รื้อฟังก์ชันแกนกลางใหม่: เปลี่ยนระบบ RPC โลคอลมาใช้การยิง Fetch API ส่งข้อมูลข้ามเซิร์ฟเวอร์แบบเสถียร
 function call(fn, args, cb) {
   if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
-    hideLoader(); alert('ระบบขัดข้อง: ครูผู้ดูแลระบบยังไม่ได้กรอกลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
+    hideLoader(); alert('ระบบขัดข้อง: ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
   }
-  
-  // ใช้โหมด Text/Plain เพื่อหลบเลี่ยงการตรวจสอบ CORS Preflight OPTIONS บนเบราว์เซอร์เก่า ช่วยให้ส่งข้อมูลผ่านมือถือได้เร็วที่สุด
   fetch(BACKEND_URL, {
     method: 'POST',
     mode: 'cors',
@@ -545,7 +540,7 @@ function buildScale4Card(q, num, prefix) {
     <div class="q-text">${q.text}</div>
     <div class="q-hint">
       <div class="hint-label">📖 คำอธิบายพฤติกรรม</div><div>${q.description}</div>
-      <div class="hint-label">💬 สถานการณ์ตัวอย่าง</div><div>${q.example}</div>
+      <div class="hint-label">💬  สถานการณ์ตัวอย่าง</div><div>${q.example}</div>
     </div>
     <div class="scale4-options">${opts}</div>
   </div>`;
