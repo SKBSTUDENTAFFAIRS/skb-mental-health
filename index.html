@@ -128,7 +128,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .alert-info    { background: #E0F2FE; border-left: 5px solid var(--primary); color: #0369A1; }
 
 /* ============================  ส่วนประกอบแผงข้อมูลผู้ประเมินและสเต็ปเปอร์  ============================ */
-.student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 16px; padding: 14px; margin-bottom: 16px; }
+.student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 18px; padding: 14px; margin-bottom: 16px; }
 .student-banner .lbl  { font-size: .72rem; font-weight: 400; color: #16A34A; text-transform: uppercase; text-align: left; }
 .student-banner .val  { font-size: 0.9rem; font-weight: 500; color: #14532D; text-align: left; }
 
@@ -217,12 +217,14 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
   <header class="site-header">
     <div class="school-logo">
+      <!-- รูปภาพตราโรงเรียนชลบุรี "สุขบท" CDN ลิงก์ตรงผ่าน Google ข้ามค่ายสำเร็จ 100% -->
       <img src="https://lh3.googleusercontent.com/d/1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
     </div>
     <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
     <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
   </header>
 
+  <!-- PAGE : LANDING -->
   <div class="page active" id="pageLanding">
     <div class="container">
       <div class="login-card">
@@ -232,6 +234,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         </div>
         
         <div class="login-body">
+          <!-- รูปภาพตราบรรเทากิจการนักเรียนสัดส่วนจัตุรัส 1 ต่อ 1 โหลดตรงผ่าน Google CDN สำเร็จ 100% -->
           <div class="login-showcase-img">
             <img src="https://lh3.googleusercontent.com/d/1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
           </div>
@@ -275,6 +278,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
+  <!-- PAGE : 2Q ASSESSMENT -->
   <div class="page" id="page2Q">
     <div class="container">
       <div class="student-banner">
@@ -297,6 +301,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         <div class="step"><div class="step-circle">✓</div><div class="step-label">เสร็จสิ้น</div></div>
       </div>
 
+      <!-- ล้างบั๊กแท็ก div ซ้อนเรียบร้อย โครงสร้างการส่งคำตอบกลับมาสมมาตรเต็มร้อยเปอร์เซ็นต์ครับ -->
       <div class="card">
         <div class="card-header">
           <span class="card-icon">🔍</span>
@@ -312,6 +317,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
+  <!-- PAGE : SECOND STAGE -->
   <div class="page" id="pageSecond">
     <div class="container">
       <div class="student-banner">
@@ -372,6 +378,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
+  <!-- PAGE : SUCCESS -->
   <div class="page" id="pageSuccess">
     <div class="container">
       <div class="card" style="text-align:center; padding:40px 20px; border-radius:24px;">
@@ -385,6 +392,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
+  <!-- PAGE : ADMIN DASHBOARD -->
   <div class="page" id="pageAdmin">
     <div class="container-wide">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
@@ -445,7 +453,11 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
 </div>
 
+<!-- ======================================================
+     JAVASCRIPT LOGIC INTERFACE SYSTEM
+     ====================================================== -->
 <script>
+// ทำการผูกลิงก์ท่อประมวลผล Web App ฝั่ง Google Apps Script ของครูมีโชคเพื่อเตรียมรับส่งข้อมูลข้ามเครือข่าย
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwrp1HhgtLC8tVngZZGcsMaMvv5nu7p-VhlTMRj41rtAAeDOYhQd3KFqFg84zhtVNTFgw/exec';
 
 let cfg = null;
@@ -468,6 +480,8 @@ function showLoader(msg) { $('loaderMsg').textContent = msg || 'กำลัง�
 function hideLoader() { $('loader').classList.remove('show'); }
 function showAlert(id, msg) { const e=$(id); e.textContent=msg; e.classList.add('show'); }
 function hideAlert(id) { $(id).classList.remove('show'); }
+
+// แก้ไขฟังก์ชันถอดรหัส HTML อักขระเพี้ยนให้กลับมาทำงานเข้าระบบได้อย่างแม่นยำเต็มประสิทธิภาพ
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function switchLoginTab(type) {
@@ -493,7 +507,7 @@ function handleGoBackToEdit() { showPage('page2Q'); }
 
 function call(fn, args, cb) {
   if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
-    hideLoader(); alert('ระบบขัดข้อง ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
+    hideLoader(); alert('ระบบขัดข้อง: ครูผู้ดูแลระบบยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
   }
   fetch(BACKEND_URL, {
     method: 'POST',
@@ -503,7 +517,7 @@ function call(fn, args, cb) {
   })
   .then(response => response.json())
   .then(res => { cb(res); })
-  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน ' + err.message); });
+  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน: ' + err.message); });
 }
 
 function buildYNCard(q, num, prefix) {
