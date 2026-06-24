@@ -22,7 +22,7 @@
   --danger:     #FF6B6B;
   --mid-risk:   #FF9F43;
   --text:       #2C3E50;
-  --muted:      --muted:      #95A5A6;
+  --muted:      #95A5A6;
   --border:     #E2E8F0;
   --bg:         #F1F5F9;
   --white:      #FFFFFF;
@@ -80,6 +80,7 @@ html, body {
 .login-tab.active { color: #4D96FF; background: var(--white); border-bottom: 4px solid #4D96FF; font-size: 0.95rem; font-weight: 500; }
 .login-body { padding: 25px 20px; display: flex; flex-direction: column; align-items: stretch; }
 
+/* อัตราส่วนแบนเนอร์จัตุรัส 1 ต่อ 1 โชว์ตราบรรเทากิจการนักเรียนตรงกลางสมมาตรชัดเจน */
 .login-showcase-img {
   width: 150px; height: 150px; overflow: hidden; border-radius: 24px; margin: 0 auto 20px;
   box-shadow: 0 6px 15px rgba(77, 150, 255, 0.1); background: #F8FAFC;
@@ -147,7 +148,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .prog-fill { height: 10px; background: var(--primary-gradient); border-radius: 999px; width: 0%; transition: width 0.4s ease; }
 .prog-text { font-size: .8rem; color: var(--muted); text-align: right; margin-top: 6px; font-weight: 400; }
 
-/* ============================  กล่องคำถามและกฎสไตล์ตัวหนาเข้ม  ============================ */
+/* ============================  กล่องข้อคำถามหลักและการล็อกตัวหนาเข้มตามคำสั่งคุณครู  ============================ */
 .q-card { background: var(--white); border: 2px solid #E2E8F0; border-radius: 20px; padding: 18px 14px; margin-bottom: 14px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.01); width: 100%; }
 .q-card.answered { border-color: #6BCB77; background: #F6FDF8; }
 .q-card.is-critical { border-left: 6px solid var(--accent); }
@@ -157,6 +158,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .q-tag   { font-size: .7rem; font-weight: 400; padding: 2px 8px; border-radius: 999px; }
 .tag-crit { background: #FEE2E2; color: var(--danger); }
 
+/* สั่งล็อกตัวหนาเข้มเด่นชัดเฉพาะที่ตัวข้อความคำถามหลักเท่านั้น ส่วนอื่นเป็นตัวผอมบางสบายตาทั้งหมด */
 .q-text  { font-size: 1rem; font-weight: 700; line-height: 1.55; margin-bottom: 12px; color: #2C3E50; text-align: left; }
 .q-hint  { background: #F0F9FF; border: 1px solid #B9E6FE; border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: .85rem; line-height: 1.55; color: #0369A1; text-align: left; font-weight: 400; }
 .q-hint .hint-label { font-weight: 400; color: #0369A1; margin-bottom: 2px; font-size: .78rem; text-transform: uppercase; }
@@ -182,8 +184,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
 .stat-card { background: var(--white); border-radius: var(--radius); padding: 22px; box-shadow: var(--card-sh); text-align: center; border: 1px solid rgba(0,0,0,0.01); }
 .stat-val   { font-size: 2.6rem; font-weight: 500; line-height: 1.1; }
-.stat-label { font-size: .85rem; color: var(--muted); margin-top: 6px; font-weight: 400; }
-.c-blue .stat-val { color: var(--primary); }
+.stat-card c-blue .stat-val { color: var(--primary); }
 .c-green .stat-val { color: var(--success); }
 .c-orange .stat-val { color: var(--mid-risk); }
 .c-red .stat-val { color: var(--danger); }
@@ -217,7 +218,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
   <header class="site-header">
     <div class="school-logo">
-      <img src="https://lh3.googleusercontent.com/d/1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
+      <img src="https://drive.google.com/uc?export=view&id=1-5vA-BKRmUdKWceUbHa97skYwno35u4A" alt="ตราโรงเรียน">
     </div>
     <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
     <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
@@ -233,7 +234,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         
         <div class="login-body">
           <div class="login-showcase-img">
-            <img src="https://lh3.googleusercontent.com/d/1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
+            <img src="https://drive.google.com/uc?export=view&id=1XIPhDR8qtxFyclu5_2N4ERIHF3oK91ug" alt="ตรากิจการนักเรียน">
           </div>
 
           <div id="studentFormSection">
@@ -298,6 +299,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
       </div>
 
       <div class="card">
+        <div class="card">
         <div class="card-header">
           <span class="card-icon">🔍</span>
           <div>
@@ -376,7 +378,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     <div class="container">
       <div class="card" style="text-align:center; padding:40px 20px; border-radius:24px;">
         <div style="font-size:5rem;">✅</div>
-        <h2 style="color:var(--success); font-size:1.5rem; margin-top:12px; font-weight:500;">ระบบทำการบันทึกข้อมูลเรียบร้อย</h2>
+        <h2 style="color:var(--success); font-size:1.5rem; margin-top:12px; font-weight:600;">ระบบทำการบันทึกข้อมูลเรียบร้อย</h2>
         <p style="color:var(--muted); margin-top:10px; line-height:1.6; font-weight:400;">ข้อมูลประเมินสุขภาพจิตของท่านเข้าสู่ฐานข้อมูลฝ่ายแนะแนวอย่างปลอดภัยเรียบร้อยแล้ว<br>ขอบคุณสำหรับความร่วมมือเพื่อดูแลช่วยเหลือนักเรียน</p>
         
         <button class="btn btn-edit btn-block" onclick="handleGoBackToEdit()" style="padding:14px; border-radius:14px; font-size:1.05rem; margin-top:20px;">✏️ ต้องการแก้ไขข้อมูลคำตอบคำถาม</button>
@@ -389,7 +391,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     <div class="container-wide">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
         <div>
-          <h2 style="font-size:1.4rem; color:var(--text); font-weight:500;">📊 คอนโซลควบคุมระบบดูแลช่วยเหลือแอดมิน (Admin Console)</h2>
+          <h2 style="font-size:1.4rem; color:var(--text); font-weight:600;">📊 คอนโซลควบคุมระบบดูแลช่วยเหลือแอดมิน (Admin Console)</h2>
           <p style="font-size:.88rem; color:var(--muted); font-weight:400;">โรงเรียนชลบุรี "สุขบท" | ระบบรายงานผลกลุ่มเสี่ยงและสถิติการดำเนินงานรายห้องเรียน</p>
         </div>
         <div style="display:flex; gap:10px;">
@@ -446,7 +448,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 </div>
 
 <script>
-// ⚠️ ห้ามลืม! นำลิงก์ Web App จาก Google Apps Script ของคุณครูมาวางแทนที่ข้อความด้านล่างนี้ใน GitHub นะครับ ⚠️
+// ⚠️ ให้นำลิงก์ Web App จาก Google Apps Script ที่ได้จากระบบของคุณครูมาวางแทนข้อความด้านล่างนี้ได้เลยครับ ⚠️
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwrp1HhgtLC8tVngZZGcsMaMvv5nu7p-VhlTMRj41rtAAeDOYhQd3KFqFg84zhtVNTFgw/exec';
 
 let cfg = null;
@@ -494,7 +496,7 @@ function handleGoBackToEdit() { showPage('page2Q'); }
 
 function call(fn, args, cb) {
   if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
-    hideLoader(); alert('ระบบขัดข้อง: ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
+    hideLoader(); alert('ระบบขัดข้อง ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ index.html บน GitHub ครับ'); return;
   }
   fetch(BACKEND_URL, {
     method: 'POST',
@@ -504,7 +506,7 @@ function call(fn, args, cb) {
   })
   .then(response => response.json())
   .then(res => { cb(res); })
-  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน: ' + err.message); });
+  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน ' + err.message); });
 }
 
 function buildYNCard(q, num, prefix) {
