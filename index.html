@@ -131,6 +131,7 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .student-banner { background: #F0FDF4; border: 2px dashed #BBF7D0; border-radius: 18px; padding: 14px; margin-bottom: 16px; }
 .student-banner .lbl  { font-size: .72rem; font-weight: 400; color: #16A34A; text-transform: uppercase; text-align: left; }
 .student-banner .val  { font-size: 0.9rem; font-weight: 500; color: #14532D; text-align: left; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 
 .stepper { display: flex; margin-bottom: 20px; width: 100%; }
 .step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
@@ -176,6 +177,9 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 .scale4-label .score-dot { width: 24px; height: 24px; border-radius: 50%; background: #E2E8F0; color: var(--muted); font-size: .85rem; font-weight: 500; line-height: 24px; text-align: center; }
 .scale4-radio:checked + .scale4-label { border-color: var(--primary); background: #4D96FF; color: #fff; box-shadow: 0 6px 14px rgba(77, 150, 255, 0.2); }
 .scale4-radio:checked + .scale4-label .score-dot { background: var(--white); color: var(--primary); }
+
+.legend-bar { display: flex; flex-wrap: wrap; gap: 6px; background: #F8FAFC; padding: 8px 12px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); justify-content: space-between; }
+.legend-item { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
 
 @media (max-width: 480px) { .scale4-options { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
 
@@ -228,14 +232,12 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
   <header class="site-header">
     <div class="school-logo">
-      <!-- วิธีที่สอง: ดึงภาพตราโรงเรียนโดยตรงความเร็วสูงจากคลัง GitHub -->
       <img src="school-logo.png" alt="ตราโรงเรียน">
     </div>
     <h1>ระบบประเมินสุขภาพจิตนักเรียน</h1>
     <p>โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน</p>
   </header>
 
-  <!-- PAGE : LANDING -->
   <div class="page active" id="pageLanding">
     <div class="container">
       <div class="login-card">
@@ -246,7 +248,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
         
         <div class="login-body">
           <div class="login-showcase-img">
-            <!-- วิธีที่สอง: ดึงภาพตรากิจการนักเรียนตรงจากคลัง GitHub ปลอดภัยถาวร -->
             <img src="admin-logo.png" alt="ตรากิจการนักเรียน">
           </div>
 
@@ -289,7 +290,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
-  <!-- PAGE : 2Q ASSESSMENT -->
   <div class="page" id="page2Q">
     <div class="container">
       <div class="student-banner">
@@ -327,13 +327,12 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
-  <!-- PAGE : SECOND STAGE -->
   <div class="page" id="pageSecond">
     <div class="container">
       <div class="student-banner">
         <div class="lbl">👤 โปรไฟล์ผู้ทำแบบประเมิน</div>
         <div class="info-grid">
-          <div><div class="lbl">ชื่อ-นามsukุล</div><div class="val" id="s2nd_name">—</div></div>
+          <div><div class="lbl">ชื่อ-นามสกุล</div><div class="val" id="s2nd_name">—</div></div>
           <div><div class="lbl">รหัสนักเรียน</div><div class="val" id="s2nd_id">—</div></div>
           <div><div class="lbl">ระดับชั้น/ห้อง</div><div class="val" id="s2nd_class">—</div></div>
           <div><div class="lbl">เลขที่</div><div class="val" id="s2nd_number">—</div></div>
@@ -388,7 +387,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
-  <!-- PAGE : SUCCESS -->
   <div class="page" id="pageSuccess">
     <div class="container">
       <div class="card" style="text-align:center; padding:40px 20px; border-radius:24px;">
@@ -402,7 +400,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
-  <!-- PAGE : ADMIN DASHBOARD -->
   <div class="page" id="pageAdmin">
     <div class="container-wide">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
@@ -411,7 +408,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
           <p style="font-size:.88rem; color:var(--muted); font-weight:400;">โรงเรียนชลบุรี "สุขบท" | ระบบรายงานผลกลุ่มเสี่ยงและสถิติการดำเนินงานรายห้องเรียน</p>
         </div>
         <div style="display:flex; gap:10px;">
-          <!-- ฟังก์ชันรีเฟรชฐานข้อมูลหลังบ้านแบบนิ่งสนิทข้ามแพลตฟอร์ม ไม่ดีดหลุดหน้าจอ -->
           <button class="btn btn-primary" id="btnRefresh" style="background:#475569; box-shadow:none;">🔄 รีเฟรชฐานข้อมูล</button>
           <button class="btn btn-outline" onclick="handleLogout()">ออกจากหน้าควบคุม</button>
         </div>
@@ -465,7 +461,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 </div>
 
 <script>
-// ผูกลิงก์ประมวลผลท่อสคริปต์ความปลอดภัยสูงข้ามไซต์เวอร์ชันปัจจุบันของคุณครูมีโชค
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz1EonZ6j5l8Ci_ySnbzKQjXQvRtyIVOaFBRF2uilEafmJiNAmem5LtZYQ5GjdXJTLP/exec';
 
 let cfg = null;
@@ -481,6 +476,7 @@ const $ = id => document.getElementById(id);
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   $(id).classList.add('active');
+  sessionStorage.setItem('currentPage', id);
   document.querySelector('.app-wrapper').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -502,7 +498,6 @@ function switchLoginTab(type) {
 }
 
 function handleLogout() {
-  // ล้างค่าระบบความจำวิเศษฝั่งโทรศัพท์เมื่อแอดมินกดออกจากระบบอย่างปลอดภัย
   sessionStorage.clear();
   currentStudent = null; answers2Q = {}; answersSecond = {}; _adminData = null; studentHistoryMap = null;
   $('fStudentId').value = ''; $('fPassword').value = ''; $('fAdminPass').value = '';
@@ -572,9 +567,22 @@ function preFillAnswersIfAny(questions, answersTargetMap) {
   questions.forEach(q => {
     if (studentHistoryMap[q.id] !== undefined) {
       let val = studentHistoryMap[q.id]; answersTargetMap[q.id] = val;
-      let radios = document.getElementsByName(q.id);
-      for(let i=0; i<radios.length; i++) {
-        if(radios[i].value === val) { radios[i].checked = true; let card = $('card_' + q.id); if(card) card.classList.add('answered'); break; }
+    }
+  });
+}
+
+function restoreCheckedRadios(questions, answersMap) {
+  questions.forEach(q => {
+    if (answersMap[q.id] !== undefined) {
+      const val = answersMap[q.id];
+      const radios = document.getElementsByName(q.id);
+      for (let i = 0; i < radios.length; i++) {
+        if (radios[i].value === String(val)) {
+          radios[i].checked = true;
+          const card = $('card_' + q.id);
+          if (card) card.classList.add('answered');
+          break;
+        }
       }
     }
   });
@@ -583,11 +591,15 @@ function preFillAnswersIfAny(questions, answersTargetMap) {
 function render2Q() {
   $('q2Container').innerHTML = cfg.Q2.map((q, i) => buildYNCard(q, i+1, '2Q')).join('');
   preFillAnswersIfAny(cfg.Q2, answers2Q);
+  restoreCheckedRadios(cfg.Q2, answers2Q);
   $('btn2QSubmit').disabled = !cfg.Q2.every(el => answers2Q[el.id] !== undefined);
   cfg.Q2.forEach(q => {
     document.querySelectorAll(`input[name="${q.id}"]`).forEach(r => {
       r.addEventListener('change', () => {
-        answers2Q[q.id] = r.value; $('card_'+q.id).classList.add('answered'); $('card_'+q.id).classList.remove('missing-highlight'); 
+        answers2Q[q.id] = r.value; 
+        sessionStorage.setItem('answers2Q', JSON.stringify(answers2Q));
+        $('card_'+q.id).classList.add('answered'); 
+        $('card_'+q.id).classList.remove('missing-highlight'); 
         $('btn2QSubmit').disabled = !cfg.Q2.every(el => answers2Q[el.id] !== undefined);
       });
     });
@@ -600,13 +612,25 @@ function renderSecond() {
   $('gad2Container').innerHTML = cfg.GAD2.map((q, i) => buildScale4Card(q, i+1, 'GAD-2')).join('');
   $('socContainer').innerHTML  = cfg.SOC.map((q,  i) => buildYNCard(q, i+1, 'สังคม')).join('');
   $('q8Container').innerHTML   = cfg.Q8.map((q,   i) => buildYNCard(q, i+1, '8Q')).join('');
-  const allQs = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8]; totalSecond = allQs.length;
+  
+  const allQs = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8]; 
+  totalSecond = allQs.length;
+  
   preFillAnswersIfAny(allQs, answersSecond);
+  restoreCheckedRadios(allQs, answersSecond);
+  
   allQs.forEach(q => {
     document.querySelectorAll(`input[name="${q.id}"]`).forEach(r => {
       r.addEventListener('change', () => {
-        answersSecond[q.id] = r.value; $('card_'+q.id).classList.add('answered'); $('card_'+q.id).classList.remove('missing-highlight'); 
-        if (q.id === '8q_3') { const has = r.value === '1'; $('card_8q_3sub').style.display = has ? '' : 'none'; if (!has) { answersSecond['8q_3sub'] = '0'; } }
+        answersSecond[q.id] = r.value; 
+        sessionStorage.setItem('answersSecond', JSON.stringify(answersSecond));
+        $('card_'+q.id).classList.add('answered'); 
+        $('card_'+q.id).classList.remove('missing-highlight'); 
+        if (q.id === '8q_3') { 
+          const has = r.value === '1'; 
+          $('card_8q_3sub').style.display = has ? '' : 'none'; 
+          if (!has) { answersSecond['8q_3sub'] = '0'; sessionStorage.setItem('answersSecond', JSON.stringify(answersSecond)); } 
+        }
         updateSecondProgress();
       });
     });
@@ -618,23 +642,35 @@ function renderSecond() {
 function updateSecondProgress() {
   const show3sub = answersSecond['8q_3'] === '1';
   const countable = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8].filter(q => q.id !== '8q_3sub' || show3sub);
-  const done = countable.filter(q => answersSecond[q.id] !== undefined).length; const total = countable.length; const pct = Math.round(done/total*100);
-  $('prog2ndFill').style.width = pct+'%'; $('prog2ndText').textContent = `คืบหน้าในการตอบคำถาม ${done} จาก ${total} ข้อ (${pct}%)`;
+  const done = countable.filter(q => answersSecond[q.id] !== undefined).length; 
+  const total = countable.length; 
+  const pct = Math.round(done/total*100);
+  $('prog2ndFill').style.width = pct+'%'; 
+  $('prog2ndText').textContent = `คืบหน้าในการตอบคำถาม ${done} จาก ${total} ข้อ (${pct}%)`;
 }
 
 function validateUnanswered(questions, answersMap) {
-  let firstMissingCard = null; const show3sub = answersMap['8q_3'] === '1';
+  let firstMissingCard = null; 
+  const show3sub = answersMap['8q_3'] === '1';
   questions.forEach(q => {
     if (q.id === '8q_3sub' && !show3sub) return;
     const card = $('card_' + q.id);
-    if (answersMap[q.id] === undefined) { if (card) { card.classList.add('missing-highlight'); if (!firstMissingCard) firstMissingCard = card; } } 
-    else { if (card) card.classList.remove('missing-highlight'); }
+    if (answersMap[q.id] === undefined) { 
+      if (card) { 
+        card.classList.add('missing-highlight'); 
+        if (!firstMissingCard) firstMissingCard = card; 
+      } 
+    } else { 
+      if (card) card.classList.remove('missing-highlight'); 
+    }
   });
-  if (firstMissingCard) { CuffirstMissingCard.scrollIntoView({ behavior: 'smooth', block: 'center' }); return false; }
+  if (firstMissingCard) { 
+    firstMissingCard.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+    return false; 
+  }
   return true;
 }
 
-// ฟังก์ชันแกนกลางระบบแอดมิน: โหลดและเขียนตารางข้อมูลสถิติโดยไม่ต้องสั่งรีโหลดล้างหน้าจอหน้าเบราว์เซอร์
 function refreshAdminData() {
   showLoader('กำลังอัปเดตสถิติฐานข้อมูลล่าสุด...');
   call('getAdminData', [], data => {
@@ -673,11 +709,17 @@ $('btnLogin').addEventListener('click', () => {
   call('verifyStudent', [id, pw], res => {
     if(res.success) {
       currentStudent = res.student; 
-      // ฝังเซสชันเก็บค่าโปรไฟล์ความปลอดภัยนักเรียนค้างไว้ในระบบเบราว์เซอร์ชั่วคราว
       sessionStorage.setItem('role', 'student');
       sessionStorage.setItem('studentData', JSON.stringify(currentStudent));
       
-      if(res.hasHistory) { studentHistoryMap = res.historyData; $('historyAlert2Q').classList.add('show'); }
+      if(res.hasHistory) { 
+        studentHistoryMap = res.historyData; 
+        sessionStorage.setItem('studentHistoryMap', JSON.stringify(studentHistoryMap));
+        $('historyAlert2Q').classList.add('show'); 
+      } else {
+        sessionStorage.removeItem('studentHistoryMap');
+      }
+      
       call('getAssessmentConfig', [], config => {
         hideLoader(); cfg = config;
         $('s2q_name').textContent = $('s2nd_name').textContent = currentStudent.name;
@@ -692,19 +734,39 @@ $('btnLogin').addEventListener('click', () => {
 
 $('btn2QSubmit').addEventListener('click', () => {
   if (!validateUnanswered(cfg.Q2, answers2Q)) { showAlert('err2Q', 'กรุณาตอบคำถามให้ครบทุกข้อ ระบบได้เลื่อนหน้าจอไปยังข้อที่ค้างอยู่ด้วยกรอบสีแดง'); return; }
-  hideAlert('err2Q'); const hasRisk = cfg.Q2.some(q => answers2Q[q.id] === '1');
-  if (hasRisk) { renderSecond(); showPage('pageSecond'); } 
-  else {
+  hideAlert('err2Q'); 
+  const hasRisk = cfg.Q2.some(q => answers2Q[q.id] === '1');
+  if (hasRisk) { 
+    renderSecond(); 
+    showPage('pageSecond'); 
+  } else {
     showLoader('กำลังส่งบันทึกข้อมูลเกณฑ์ปกติลงฐานข้อมูล...');
-    call('saveData', [currentStudent, answers2Q, null], res => { hideLoader(); if(res.success) showPage('pageSuccess'); else { alert(res.error); } });
+    call('saveData', [currentStudent, answers2Q, null], res => { 
+      hideLoader(); 
+      if(res.success) {
+        sessionStorage.clear();
+        showPage('pageSuccess'); 
+      } else { 
+        alert(res.error); 
+      } 
+    });
   }
 });
 
 $('btn2ndSubmit').addEventListener('click', () => {
   const allQs = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8];
   if (!validateUnanswered(allQs, answersSecond)) { showAlert('err2nd', 'กรุณาตอบคำถามให้ครบถ้วนทุกช่อง ระบบได้เลื่อนหน้าจอไปยังข้อที่ค้างอยู่ด้วยกรอบสีแดงเรียบร้อย'); return; }
-  hideAlert('err2nd'); showLoader('กำลังวิเคราะห์ประมวลผลความปลอดภัยและจัดเก็บข้อมูล...');
-  call('saveData', [currentStudent, answers2Q, answersSecond], res => { hideLoader(); if(res.success) showPage('pageSuccess'); else { showAlert('err2nd', res.error); } });
+  hideAlert('err2nd'); 
+  showLoader('กำลังวิเคราะห์ประมวลผลความปลอดภัยและจัดเก็บข้อมูล...');
+  call('saveData', [currentStudent, answers2Q, answersSecond], res => { 
+    hideLoader(); 
+    if(res.success) {
+      sessionStorage.clear();
+      showPage('pageSuccess'); 
+    } else { 
+      showAlert('err2nd', res.error); 
+    } 
+  });
 });
 
 $('btnAdminLogin').addEventListener('click', () => {
@@ -712,7 +774,6 @@ $('btnAdminLogin').addEventListener('click', () => {
   showLoader('กำลังเข้าสู่ระบบและคำนวณสถิติแดชบอร์ด...');
   call('verifyAdmin', [pw], res => {
     if(res.success) {
-      // ฝังเซสชันเก็บค่าสิทธิ์การเข้าถึงแอดมินค้างไว้ในระบบเบราว์เซอร์ชั่วคราว
       sessionStorage.setItem('role', 'admin');
       showPage('pageAdmin');
       refreshAdminData();
@@ -720,37 +781,46 @@ $('btnAdminLogin').addEventListener('click', () => {
   });
 });
 
-// ผูกฟังก์ชันรีเฟรชฐานข้อมูลตัวใหม่เข้ากับปุ่มกด โดยไม่ใช้การรีโหลดล้างจอหน้าเว็บเดิม
 $('btnRefresh').addEventListener('click', refreshAdminData);
 
 function badgeFor(s) { if (!s || s === 'ไม่ได้ทำ' || s === 'ปกติ') return '<span class="badge badge-green">ปกติ</span>'; if (s.includes('รุนแรง') || s.includes('วิกฤต') || s.includes('เสี่ยงรุนแรง')) return `<span class="badge badge-red">${esc(s)}</span>`; return `<span class="badge badge-orange">${esc(s)}</span>`; }
 
-// ระบบตรวจสอบและดึงสถานะความจำวิเศษ (Session Storage Auto-Restore) เมื่อบุคคลเผลอกดปุ่มรีเฟรชหน้าต่างเบราว์เซอร์
+// ระบบตรวจจับพฤติกรรม F5 เพื่อดึงหน่วยความจำวิเศษกลับคืนมาแรนเดอร์หน้าจอเดิมอัตโนมัติ
 window.addEventListener('DOMContentLoaded', () => {
   const savedRole = sessionStorage.getItem('role');
+  const savedPage = sessionStorage.getItem('currentPage');
+  
   if (savedRole === 'admin') {
-    showPage('pageAdmin');
+    if (savedPage) { showPage(savedPage); } else { showPage('pageAdmin'); }
     refreshAdminData();
   } else if (savedRole === 'student') {
     currentStudent = JSON.parse(sessionStorage.getItem('studentData'));
-    showLoader('กำลังฟื้นฟูข้อมูลสถานะการบันทึกค้างเก่า...');
+    
+    const savedAnswers2Q = sessionStorage.getItem('answers2Q');
+    if (savedAnswers2Q) answers2Q = JSON.parse(savedAnswers2Q);
+    
+    const savedAnswersSecond = sessionStorage.getItem('answersSecond');
+    if (savedAnswersSecond) answersSecond = JSON.parse(savedAnswersSecond);
+    
+    const savedHistory = sessionStorage.getItem('studentHistoryMap');
+    if (savedHistory) studentHistoryMap = JSON.parse(savedHistory);
+
+    showLoader('กำลังฟื้นฟูข้อมูลสถานะการทำรายการ...');
     call('getAssessmentConfig', [], config => {
       hideLoader(); cfg = config;
       $('s2q_name').textContent = $('s2nd_name').textContent = currentStudent.name;
       $('s2q_id').textContent = $('s2nd_id').textContent = currentStudent.id;
       $('s2q_class').textContent = $('s2nd_class').textContent = currentStudent.class;
       $('s2q_number').textContent = $('s2nd_number').textContent = currentStudent.number;
-      showPage('page2Q'); render2Q();
+      
+      const targetPage = savedPage || 'page2Q';
+      showPage(targetPage);
+      render2Q();
+      if (targetPage === 'pageSecond') {
+        renderSecond();
+      }
     });
   }
-});
-
-$('btnExport').addEventListener('click', () => {
-  if (!_adminData || !_adminData.atRisk.length) return;
-  const headers = ['ลำดับที่','รหัสประจำตัว','ชื่อ-นามสกุล','ห้องเรียน','เลขที่','คัดกรอง2Q','ภาวะซึมเศร้า','คะแนนซึมเศร้า','ภาวะความเครียด','คะแนนความเครียด','ภาวะวิตกกังวล','คะแนนวิตกกังวล','ปัญหาปัจจัยสังคม','ความเสี่ยงทำร้ายตัวเอง','คะแนน8Q','ความเสี่ยงภาพรวม','รายละเอียดพฤติกรรมสรุป','วันเวลาที่ระบบประเมิน'];
-  const rows = _adminData.atRisk.map((r,i) => [i+1,r.id,r.name,r.class,r.number,'เสี่ยง',r.phqaStatus,r.phqaScore,r.st5Status,r.st5Score,r.gad2Status,r.gad2Score,r.socStatus,r.q8Status,r.q8Score,r.overall,r.detail,r.timestamp]);
-  const csv = '\uFEFF' + [headers,...rows].map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'รายงานเคสกลุ่มเสี่ยงนักเรียน_สุขบท.csv'; a.click();
 });
 </script>
 </body>
