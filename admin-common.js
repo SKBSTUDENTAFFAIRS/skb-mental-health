@@ -31,7 +31,7 @@ function hideLoader() { $('loader').classList.remove('show'); }
 
 // ---------- เรียก Apps Script backend ----------
 function call(fn, args, cb) {
-  if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
+  if (!BACKEND_URL || BACKEND_URL.includes('https://script.google.com/macros/s/AKfycbx56qhXXK5LoaZNltNFSKCoH9uZL7e8DgHBQSj8CRbqRow9RCBMhpZoJAaXzRB0NcWU/exec')) {
     hideLoader();
     alert('ระบบขัดข้อง ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ admin-common.js ครับ');
     return;
@@ -221,7 +221,7 @@ function buildBreadcrumb(el, opts) {
 
 function badgeFor(s) {
   if (!s || s === 'ไม่ได้ทำ' || s === 'ปกติ') return '<span class="badge badge-green">ปกติ</span>';
-  if (s.includes('รุนแรง') || s.includes('วิกฤต')) return `<span class="badge badge-red">${esc(s)}</span>`;
+  if (s.includes('รุนแรง') || s.includes('วิกฤต') || s.includes('สูง')) return `<span class="badge badge-red">${esc(s)}</span>`;
   return `<span class="badge badge-orange">${esc(s)}</span>`;
 }
 
