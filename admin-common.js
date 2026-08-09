@@ -3,7 +3,7 @@
 // (admin-school.html / admin-grade.html / admin-cases.html)
 // ===================================================
 
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz1EonZ6j5l8Ci_ySnbzKQjXQvRtyIVOaFBRF2uilEafmJiNAmem5LtZYQ5GjdXJTLP/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzCPmo5yEITxVuxFAW7JJ2bG-YMRJf1Bp_e5s_sj3sYANXWSf3YP2dSUHU3ljTVyUXm/exec';
 
 const $ = id => document.getElementById(id);
 
