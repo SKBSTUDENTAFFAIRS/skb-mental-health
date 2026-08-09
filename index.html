@@ -462,8 +462,8 @@ function buildYNCard(q, num, prefix) {
         <input type="radio" name="${q.id}" id="${q.id}_yes" value="0" class="yn-radio"><label for="${q.id}_yes" class="yn-label yes">✅ ควบคุมตนเองได้</label>
         <input type="radio" name="${q.id}" id="${q.id}_no" value="8" class="yn-radio"><label for="${q.id}_no" class="yn-label no ctrl-label ctrl-no">❌ ควบคุมตนเองไม่ได้</label>
       ` : `
-        <input type="radio" name="${q.id}" id="${q.id}_yes" value="1" class="yn-radio"><label for="${q.id}_yes" class="yn-label yes">✅ ใช่ / มีอาการ</label>
-        <input type="radio" name="${q.id}" id="${q.id}_no" value="0" class="yn-radio"><label for="${q.id}_no" class="yn-label no">❌ ไม่ใช่ / ไม่มี</label>
+        <input type="radio" name="${q.id}" id="${q.id}_yes" value="${q.scores ? q.scores[1] : 1}" class="yn-radio"><label for="${q.id}_yes" class="yn-label yes">✅ ใช่ / มีอาการ</label>
+        <input type="radio" name="${q.id}" id="${q.id}_no" value="${q.scores ? q.scores[0] : 0}" class="yn-radio"><label for="${q.id}_no" class="yn-label no">❌ ไม่ใช่ / ไม่มี</label>
       `}
     </div>
   </div>`;
