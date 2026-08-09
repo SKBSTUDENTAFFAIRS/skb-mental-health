@@ -621,23 +621,10 @@ $('btnLogin').addEventListener('click', () => {
 
 $('btn2QSubmit').addEventListener('click', () => {
   if (!validateUnanswered(cfg.Q2, answers2Q)) { showAlert('err2Q', 'กรุณาตอบคำถามให้ครบทุกข้อ ระบบได้เลื่อนหน้าจอไปยังข้อที่ค้างอยู่ด้วยกรอบสีแดง'); return; }
-  hideAlert('err2Q'); 
-  const hasRisk = cfg.Q2.some(q => answers2Q[q.id] === '1');
-  if (hasRisk) { 
-    renderSecond(); 
-    showPage('pageSecond'); 
-  } else {
-    showLoader('กำลังส่งบันทึกข้อมูลเกณฑ์ปกติลงฐานข้อมูล...');
-    call('saveData', [currentStudent, answers2Q, null], res => { 
-      hideLoader(); 
-      if(res.success) {
-        sessionStorage.clear();
-        showPage('pageSuccess'); 
-      } else { 
-        alert(res.error); 
-      } 
-    });
-  }
+  hideAlert('err2Q');
+  // นักเรียนทุกคนทำแบบประเมินต่อให้ครบทุกส่วนเสมอ ไม่ว่าคำตอบ 2 ข้อแรกจะเป็นอย่างไร
+  renderSecond();
+  showPage('pageSecond');
 });
 
 $('btn2ndSubmit').addEventListener('click', () => {
