@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ภาพรวมระดับชั้น | ระบบประเมินสุขภาพจิตนักเรียน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="admin-common.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="spinner"></div><p class="loader-msg" id="loaderMsg">กำลังดำเนินการ...</p></div>
+
+<div class="admin-topbar">
+  <div class="ttl">
+    <img src="school-logo.png" alt="ตราโรงเรียน">
+    <div>
+      <h1 id="pageTitle">📊 ภาพรวมระดับชั้น</h1>
+      <p>โรงเรียนชลบุรี "สุขบท"</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-outline" id="btnRefresh">🔄 รีเฟรช</button>
+    <button class="btn btn-outline" id="btnLogout">ออกจากระบบ</button>
+  </div>
+</div>
+
+<div class="container-wide">
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <div id="riskBannerWrap"></div>
+
+  <div class="summary-grid">
+    <div class="stat-card c-blue"><div class="stat-val" id="statTotal">—</div><div class="stat-label">นักเรียนในระดับชั้นนี้</div></div>
+    <div class="stat-card c-green"><div class="stat-val" id="statDone">—</div><div class="stat-label">ส่งแบบประเมินแล้ว</div></div>
+    <a class="stat-card clickable c-orange" id="linkWatch" href="#"><div class="stat-val" id="statRisk">—</div><div class="stat-label">เคสเฝ้าระวัง (คลิกดูรายชื่อ)</div></a>
+    <a class="stat-card clickable c-red" id="linkCritical" href="#"><div class="stat-val" id="statCritical">—</div><div class="stat-label">🚨 เคสวิกฤต (คลิกดูรายชื่อ)</div></a>
+  </div>
+
+  <div class="card">
+    <div class="section-heading"><div class="section-title">📈 สัดส่วนกลุ่มเสี่ยงแยกรายห้อง</div></div>
+    <div class="chart-wrap" id="chartRooms"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-title">🚪 เลือกห้องเพื่อดูรายละเอียด</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-export" id="btnExportPdf">📥 PDF ระดับชั้นนี้</button>
+        <button class="btn btn-excel" id="btnExportExcel">📊 Excel ระดับชั้นนี้</button>
+      </div>
+    </div>
+    <div class="tile-grid" id="roomTiles"></div>
+  </div>
+
+  <div class="page-footer">โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน<br>พัฒนาเว็บโดย นายมีโชค ผลชู</div>
+</div>
+
+<div id="printReport"></div>
+
+<script src="admin-common.js"></script>
+<script>
+requireAdminSession();
+const GRADE = getQueryParam('grade');
+if (!GRADE) window.location.href = 'admin-school.html';
+
+let _adminData = null;
+let _currentScope = null;
+
+function init(force) {
+  fetchAdminData(data => { _adminData = data; render(); }, force);
+}
+
+function render() {
+  buildBreadcrumb($('breadcrumb'), { grade: GRADE });
+  $('pageTitle').textContent = '📊 ภาพรวม' + gradeLabel(GRADE);
+  document.title = gradeLabel(GRADE) + ' | ระบบประเมินสุขภาพจิตนักเรียน';
+
+  const scope = computeScope(_adminData, { grade: GRADE });
+  _currentScope = scope;
+
+  $('statTotal').textContent = scope.summary.totalStudents;
+  $('statDone').textContent = scope.summary.totalDone;
+  $('statRisk').textContent = scope.summary.totalAtRisk;
+  $('statCritical').textContent = scope.summary.totalCritical;
+  $('linkWatch').href = `admin-cases.html?grade=${encodeURIComponent(GRADE)}&filter=watch`;
+  $('linkCritical').href = `admin-cases.html?grade=${encodeURIComponent(GRADE)}&filter=critical`;
+  $('riskBannerWrap').innerHTML = riskBannerHTML(scope);
+
+  const roomStats = scope.progress.map(p => {
+    const rScope = computeScope(_adminData, { grade: GRADE, room: p.class });
+    return { room: p.class, summary: rScope.summary, tier: riskTier(rScope.summary) };
+  });
+
+  renderBarChart('chartRooms', roomStats.map(r => ({
+    label: 'ห้อง ' + r.room,
+    pct: r.summary.totalDone ? (r.summary.totalAtRisk / r.summary.totalDone * 100) : 0,
+    count: r.summary.totalAtRisk
+  })));
+
+  const rt = $('roomTiles'); rt.innerHTML = '';
+  if (!roomStats.length) {
+    rt.innerHTML = '<p class="empty-note">ไม่พบห้องเรียนในระดับชั้นนี้</p>';
+  }
+  roomStats.forEach(r => {
+    const a = document.createElement('a');
+    a.href = `admin-cases.html?grade=${encodeURIComponent(GRADE)}&room=${encodeURIComponent(r.room)}`;
+    a.className = `tile ${r.tier.cls}`;
+    a.innerHTML = `<div class="tl-title">ห้อง ${esc(r.room)}</div><div class="tl-sub">นักเรียน ${r.summary.totalStudents} คน • ส่งแล้ว ${r.summary.totalDone} คน</div><span class="tl-badge">${r.tier.label}</span>`;
+    rt.appendChild(a);
+  });
+}
+
+$('btnRefresh').addEventListener('click', () => init(true));
+$('btnLogout').addEventListener('click', handleLogout);
+$('btnExportPdf').addEventListener('click', () => buildPrintReport(_currentScope));
+$('btnExportExcel').addEventListener('click', () => buildExcelExport(_currentScope));
+
+init(false);
+</script>
+</body>
+</html>

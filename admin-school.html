@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ภาพรวมทั้งโรงเรียน | ระบบประเมินสุขภาพจิตนักเรียน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="admin-common.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="spinner"></div><p class="loader-msg" id="loaderMsg">กำลังดำเนินการ...</p></div>
+
+<div class="admin-topbar">
+  <div class="ttl">
+    <img src="school-logo.png" alt="ตราโรงเรียน">
+    <div>
+      <h1>📊 คอนโซลควบคุมระบบดูแลช่วยเหลือแอดมิน</h1>
+      <p>โรงเรียนชลบุรี "สุขบท" | ภาพรวมทั้งโรงเรียน</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-outline" id="btnRefresh">🔄 รีเฟรช</button>
+    <button class="btn btn-outline" id="btnLogout">ออกจากระบบ</button>
+  </div>
+</div>
+
+<div class="container-wide">
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <div id="riskBannerWrap"></div>
+
+  <div class="summary-grid">
+    <div class="stat-card c-blue"><div class="stat-val" id="statTotal">—</div><div class="stat-label">นักเรียนทั้งหมด</div></div>
+    <div class="stat-card c-green"><div class="stat-val" id="statDone">—</div><div class="stat-label">ส่งแบบประเมินแล้ว</div></div>
+    <a class="stat-card clickable c-orange" href="admin-cases.html?filter=watch"><div class="stat-val" id="statRisk">—</div><div class="stat-label">เคสเฝ้าระวัง (คลิกดูรายชื่อ)</div></a>
+    <a class="stat-card clickable c-red" href="admin-cases.html?filter=critical"><div class="stat-val" id="statCritical">—</div><div class="stat-label">🚨 เคสวิกฤต (คลิกดูรายชื่อ)</div></a>
+  </div>
+
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-title">📈 สัดส่วนกลุ่มเสี่ยงแยกรายระดับชั้น</div>
+    </div>
+    <div class="chart-wrap" id="chartGrades"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-title">🧩 สัดส่วนผลประเมินทั้งโรงเรียน</div>
+    </div>
+    <div class="chart-wrap" id="chartComposition"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-title">🏫 เลือกระดับชั้นเพื่อดูรายละเอียด</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-export" id="btnExportPdf">📥 PDF ทั้งโรงเรียน</button>
+        <button class="btn btn-excel" id="btnExportExcel">📊 Excel ทั้งโรงเรียน</button>
+      </div>
+    </div>
+    <div class="tile-grid" id="gradeTiles"></div>
+  </div>
+
+  <div class="page-footer">โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน<br>พัฒนาเว็บโดย นายมีโชค ผลชู</div>
+</div>
+
+<div id="printReport"></div>
+
+<script src="admin-common.js"></script>
+<script>
+requireAdminSession();
+let _adminData = null;
+let _currentScope = null;
+
+function init(force) {
+  fetchAdminData(data => { _adminData = data; render(); }, force);
+}
+
+function render() {
+  buildBreadcrumb($('breadcrumb'), {});
+  const scope = computeScope(_adminData, {});
+  _currentScope = scope;
+
+  $('statTotal').textContent = scope.summary.totalStudents;
+  $('statDone').textContent = scope.summary.totalDone;
+  $('statRisk').textContent = scope.summary.totalAtRisk;
+  $('statCritical').textContent = scope.summary.totalCritical;
+  $('riskBannerWrap').innerHTML = riskBannerHTML(scope);
+
+  const grades = [...new Set(_adminData.progress.map(p => parseGrade(p.class)))]
+    .sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
+
+  const gradeStats = grades.map(g => {
+    const gScope = computeScope(_adminData, { grade: g });
+    return { grade: g, summary: gScope.summary, tier: riskTier(gScope.summary) };
+  });
+
+  renderBarChart('chartGrades', gradeStats.map(g => ({
+    label: gradeLabel(g.grade),
+    pct: g.summary.totalDone ? (g.summary.totalAtRisk / g.summary.totalDone * 100) : 0,
+    count: g.summary.totalAtRisk
+  })));
+
+  const normalCount = Math.max(0, scope.summary.totalDone - scope.summary.totalAtRisk);
+  const watchCount  = Math.max(0, scope.summary.totalAtRisk - scope.summary.totalCritical);
+  renderDonutChart('chartComposition', [
+    { label: 'ปกติ',     value: normalCount,               color: '#6BCB77' },
+    { label: 'เฝ้าระวัง', value: watchCount,                color: '#FF9F43' },
+    { label: 'วิกฤต',     value: scope.summary.totalCritical, color: '#FF6B6B' }
+  ]);
+
+  const tg = $('gradeTiles'); tg.innerHTML = '';
+  if (!gradeStats.length) {
+    tg.innerHTML = '<p class="empty-note">ยังไม่มีข้อมูลห้องเรียนในระบบ</p>';
+  }
+  gradeStats.forEach(g => {
+    const a = document.createElement('a');
+    a.href = `admin-grade.html?grade=${encodeURIComponent(g.grade)}`;
+    a.className = `tile ${g.tier.cls}`;
+    a.innerHTML = `<div class="tl-title">${esc(gradeLabel(g.grade))}</div><div class="tl-sub">นักเรียน ${g.summary.totalStudents} คน • ส่งแล้ว ${g.summary.totalDone} คน</div><span class="tl-badge">${g.tier.label}</span>`;
+    tg.appendChild(a);
+  });
+}
+
+$('btnRefresh').addEventListener('click', () => init(true));
+$('btnLogout').addEventListener('click', handleLogout);
+$('btnExportPdf').addEventListener('click', () => buildPrintReport(_currentScope));
+$('btnExportExcel').addEventListener('click', () => buildExcelExport(_currentScope));
+
+init(false);
+</script>
+</body>
+</html>
