@@ -551,7 +551,7 @@ function renderSecond() {
         $('card_'+q.id).classList.add('answered'); 
         $('card_'+q.id).classList.remove('missing-highlight'); 
         if (q.id === '8q_3') { 
-          const has = r.value === '1'; 
+          const has = r.value === '6';  // ค่า "มี" ของ 8q_3 ตามน้ำหนักคะแนนทางการคือ 6 ไม่ใช่ 1
           $('card_8q_3sub').style.display = has ? '' : 'none'; 
           if (!has) { answersSecond['8q_3sub'] = '0'; sessionStorage.setItem('answersSecond', JSON.stringify(answersSecond)); } 
         }
@@ -559,12 +559,12 @@ function renderSecond() {
       });
     });
   });
-  if (answersSecond['8q_3'] === '1') { $('card_8q_3sub').style.display = ''; } else { $('card_8q_3sub').style.display = 'none'; answersSecond['8q_3sub'] = '0'; }
+  if (answersSecond['8q_3'] === '6') { $('card_8q_3sub').style.display = ''; } else { $('card_8q_3sub').style.display = 'none'; answersSecond['8q_3sub'] = '0'; }
   updateSecondProgress();
 }
 
 function updateSecondProgress() {
-  const show3sub = answersSecond['8q_3'] === '1';
+  const show3sub = answersSecond['8q_3'] === '6';
   const countable = [...cfg.PHQA, ...cfg.ST5, ...cfg.GAD2, ...cfg.SOC, ...cfg.Q8].filter(q => q.id !== '8q_3sub' || show3sub);
   const done = countable.filter(q => answersSecond[q.id] !== undefined).length; 
   const total = countable.length; 
@@ -575,7 +575,7 @@ function updateSecondProgress() {
 
 function validateUnanswered(questions, answersMap) {
   let firstMissingCard = null; 
-  const show3sub = answersMap['8q_3'] === '1';
+  const show3sub = answersMap['8q_3'] === '6';
   questions.forEach(q => {
     if (q.id === '8q_3sub' && !show3sub) return;
     const card = $('card_' + q.id);
