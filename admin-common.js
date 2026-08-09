@@ -3,7 +3,8 @@
 // (admin-school.html / admin-grade.html / admin-cases.html)
 // ===================================================
 
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzCPmo5yEITxVuxFAW7JJ2bG-YMRJf1Bp_e5s_sj3sYANXWSf3YP2dSUHU3ljTVyUXm/exec';
+// วางลิงก์ /exec ที่ได้จากการ Deploy Apps Script (ผูกกับชีตใหม่ SKBMENTALHEALTH) แทนที่ตรงนี้
+const BACKEND_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE';
 
 const $ = id => document.getElementById(id);
 
@@ -30,6 +31,11 @@ function hideLoader() { $('loader').classList.remove('show'); }
 
 // ---------- เรียก Apps Script backend ----------
 function call(fn, args, cb) {
+  if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
+    hideLoader();
+    alert('ระบบขัดข้อง ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ admin-common.js ครับ');
+    return;
+  }
   fetch(BACKEND_URL, {
     method: 'POST', mode: 'cors',
     headers: { 'Content-Type': 'text/plain' },
@@ -54,6 +60,16 @@ function fetchAdminData(cb, forceRefresh) {
     hideLoader();
     if (!data.success) { alert(data.error); return; }
     sessionStorage.setItem('adminDataCache', JSON.stringify({ ts: Date.now(), data }));
+    cb(data);
+  });
+}
+
+// ---------- ดึงรายชื่อนักเรียน "ทุกคน" ในห้องเดียว (รวมคนที่ยังไม่ทำ/ผลปกติด้วย ไม่ใช่แค่กลุ่มเสี่ยง) ----------
+function fetchRoomRoster(room, cb) {
+  showLoader('กำลังดึงรายชื่อทั้งหมดในห้อง ' + room + '...');
+  call('getRoomRoster', [room], data => {
+    hideLoader();
+    if (!data.success) { alert(data.error); return; }
     cb(data);
   });
 }
@@ -127,6 +143,62 @@ function riskBannerHTML(scope) {
       <div class="rb-body">ส่งแบบประเมินแล้ว ${scope.summary.totalDone}/${scope.summary.totalStudents} คน • กลุ่มเฝ้าระวัง ${scope.summary.totalAtRisk} คน (${pctTxt}) • กลุ่มวิกฤต ${scope.summary.totalCritical} คน</div>
       <div class="rb-guidance">${esc(t.guidance)}</div>
     </div>`;
+}
+
+// ---------- แปลงผล getRoomRoster (รายชื่อนักเรียน "ทุกคน" ในห้อง) ให้อยู่ในรูปแบบ scope เดียวกับ
+//            computeScope เพื่อให้ riskBannerHTML / buildPrintReport / buildExcelExport ใช้ร่วมกันได้ ----------
+function rosterToScope(rosterData, filter) {
+  const roster = rosterData.roster;
+  const submitted = roster.filter(r => r.submitted);
+  const atRisk = submitted.filter(r => r.overall === 'เสี่ยงปานกลาง' || r.overall === 'เสี่ยงรุนแรง');
+
+  let filteredRoster = roster;
+  if (filter === 'critical')   filteredRoster = roster.filter(r => r.isCritical);
+  else if (filter === 'watch') filteredRoster = atRisk.filter(r => !r.isCritical);
+  else if (filter === 'normal')filteredRoster = submitted.filter(r => r.overall === 'ปกติ');
+  else if (filter === 'pending') filteredRoster = roster.filter(r => !r.submitted);
+
+  const filterLabels = { critical: 'เฉพาะกลุ่มวิกฤต', watch: 'เฉพาะกลุ่มเฝ้าระวัง', normal: 'เฉพาะกลุ่มปกติ', pending: 'เฉพาะยังไม่ทำแบบประเมิน' };
+  return {
+    summary: {
+      totalStudents: roster.length, totalDone: submitted.length,
+      totalAtRisk: atRisk.length, totalCritical: roster.filter(r => r.isCritical).length
+    },
+    atRisk, filteredAtRisk: filteredRoster, roster, filteredRoster, isRoster: true,
+    listLabel: 'รายชื่อนักเรียนทั้งหมดในห้อง' + (filterLabels[filter] ? ' (' + filterLabels[filter] + ')' : ''),
+    progress: [{ class: rosterData.room, total: roster.length, done: submitted.length,
+      percent: roster.length ? Math.round(submitted.length / roster.length * 100) : 0 }],
+    scopeLabel: 'ห้อง ' + rosterData.room, room: rosterData.room, filter
+  };
+}
+
+// ---------- วาดตารางรายชื่อ "ทุกคน" ในห้อง (ปกติ/เสี่ยง/วิกฤต/ยังไม่ทำ ครบทุกคน ไม่ใช่แค่กลุ่มเสี่ยง) ----------
+function renderRosterTable(bodyId, roster) {
+  const rb = $(bodyId); rb.innerHTML = '';
+  if (!roster.length) { rb.innerHTML = `<tr><td colspan="12" class="empty-note">ไม่พบนักเรียนในห้องนี้</td></tr>`; return; }
+  roster.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (r.isCritical) tr.className = 'crit-row';
+    if (!r.submitted) {
+      tr.innerHTML = `<td>${i + 1}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.number)}</td>
+        <td colspan="7" style="color:var(--muted);">ยังไม่ได้ทำแบบประเมิน</td>
+        <td><span class="badge badge-gray">ยังไม่ทำ</span></td>`;
+    } else {
+      const overallBadge = r.isCritical ? '<span class="badge badge-red">🔴 วิกฤต</span>'
+        : r.overall === 'เสี่ยงปานกลาง' ? '<span class="badge badge-orange">🟠 เฝ้าระวัง</span>'
+        : '<span class="badge badge-green">🟢 ปกติ</span>';
+      tr.innerHTML = `<td>${i + 1}${r.isCritical ? ' 🚨' : ''}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.number)}</td>
+        <td>${badgeFor(r.phqaStatus)} <small>${r.phqaScore}/27</small></td>
+        <td>${badgeFor(r.st5Status)} <small>${r.st5Score}/15</small></td>
+        <td>${badgeFor(r.gad2Status)} <small>${r.gad2Score}/6</small></td>
+        <td>${badgeFor(r.socStatus)}</td>
+        <td>${badgeFor(r.q8Status)} <small>${r.q8Score}คะแนน</small></td>
+        <td>${overallBadge}</td>
+        <td style="font-size:.8rem; max-width:220px; font-weight:600;">${esc(r.detail || '')}</td>
+        <td><small>${esc(r.timestamp || '')}</small></td>`;
+    }
+    rb.appendChild(tr);
+  });
 }
 
 // ---------- เบรดครัมบ์นำทาง ----------
@@ -242,14 +314,18 @@ function buildPrintReport(scope) {
     html += `</tbody></table>`;
   }
 
-  html += `<div class="pr-section-title">🔴 รายชื่อนักเรียนกลุ่มเสี่ยง (${list.length} คน)</div>`;
+  html += `<div class="pr-section-title">${scope.isRoster ? '📋' : '🔴'} ${esc(scope.listLabel || 'รายชื่อนักเรียนกลุ่มเสี่ยง')} (${list.length} คน)</div>`;
   if (!list.length) {
-    html += `<p style="font-size:.75rem;color:#64748B;">ไม่พบนักเรียนกลุ่มเสี่ยงในขอบเขตที่เลือก</p>`;
+    html += `<p style="font-size:.75rem;color:#64748B;">ไม่พบนักเรียนในขอบเขตที่เลือก</p>`;
   } else {
     html += `<table class="pr-table"><thead><tr><th>#</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ห้อง</th><th>เลขที่</th><th>PHQ-A</th><th>ST5</th><th>GAD-2</th><th>สังคม</th><th>8Q</th><th>ผลประเมินรวม</th><th>วันที่ทำแบบประเมิน</th></tr></thead><tbody>`;
     list.forEach((r, i) => {
+      if (r.submitted === false) {
+        html += `<tr><td>${i + 1}</td><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${esc(r.class || scope.room || '')}</td><td>${esc(r.number)}</td><td colspan="5" style="color:#94A3B8;">ยังไม่ได้ทำแบบประเมิน</td><td>ยังไม่ทำ</td><td>-</td></tr>`;
+        return;
+      }
       html += `<tr class="${r.isCritical ? 'pr-crit' : ''}">
-        <td>${i + 1}${r.isCritical ? ' 🚨' : ''}</td><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${esc(r.class)}</td><td>${esc(r.number)}</td>
+        <td>${i + 1}${r.isCritical ? ' 🚨' : ''}</td><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${esc(r.class || scope.room || '')}</td><td>${esc(r.number)}</td>
         <td>${esc(r.phqaStatus)} (${r.phqaScore})</td><td>${esc(r.st5Status)} (${r.st5Score})</td><td>${esc(r.gad2Status || '-')} (${r.gad2Score ?? '-'})</td><td>${esc(r.socStatus || '-')}</td><td>${esc(r.q8Status)} (${r.q8Score})</td>
         <td><strong>${esc(r.overall)}</strong></td><td>${esc(r.timestamp)}</td>
       </tr>`;
@@ -293,9 +369,15 @@ function buildExcelExport(scope) {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(progRows), 'ความคืบหน้ารายห้อง');
   }
 
-  const caseRows = [['รหัส','ชื่อ-นามสกุล','ห้อง','เลขที่','PHQ-A สถานะ','PHQ-A คะแนน','ST5 สถานะ','ST5 คะแนน','GAD-2 สถานะ','GAD-2 คะแนน','สังคม','8Q สถานะ','8Q คะแนน','ผลประเมินรวม','วิกฤต','วันที่ทำแบบประเมิน']];
-  list.forEach(r => caseRows.push([r.id, r.name, r.class, r.number, r.phqaStatus, r.phqaScore, r.st5Status, r.st5Score, r.gad2Status, r.gad2Score, r.socStatus, r.q8Status, r.q8Score, r.overall, r.isCritical ? 'ใช่' : '-', r.timestamp]));
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(caseRows), 'รายชื่อกลุ่มเสี่ยง');
+  const caseRows = [['รหัส','ชื่อ-นามสกุล','ห้อง','เลขที่','สถานะ','PHQ-A สถานะ','PHQ-A คะแนน','ST5 สถานะ','ST5 คะแนน','GAD-2 สถานะ','GAD-2 คะแนน','สังคม','8Q สถานะ','8Q คะแนน','ผลประเมินรวม','วิกฤต','วันที่ทำแบบประเมิน']];
+  list.forEach(r => {
+    if (r.submitted === false) {
+      caseRows.push([r.id, r.name, r.class || scope.room || '', r.number, 'ยังไม่ทำ', '-','-','-','-','-','-','-','-','-','-','-','-']);
+    } else {
+      caseRows.push([r.id, r.name, r.class || scope.room || '', r.number, 'ทำแล้ว', r.phqaStatus, r.phqaScore, r.st5Status, r.st5Score, r.gad2Status, r.gad2Score, r.socStatus, r.q8Status, r.q8Score, r.overall, r.isCritical ? 'ใช่' : '-', r.timestamp]);
+    }
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(caseRows), scope.isRoster ? 'รายชื่อทั้งหมด' : 'รายชื่อกลุ่มเสี่ยง');
 
   const filenameSafe = scope.scopeLabel.replace(/[^a-zA-Zก-๙0-9]/g, '_');
   XLSX.writeFile(wb, `รายงานสุขภาพจิต_${filenameSafe}.xlsx`);

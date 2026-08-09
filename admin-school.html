@@ -41,6 +41,15 @@
   </div>
 
   <div class="card">
+    <div class="section-heading"><div class="section-title">🔎 ไปที่ห้องโดยตรง</div></div>
+    <div class="filter-bar">
+      <input type="text" id="roomJumpInput" list="roomJumpList" placeholder="พิมพ์ห้อง เช่น 5/8 แล้วกด Enter หรือกดปุ่ม">
+      <datalist id="roomJumpList"></datalist>
+      <button class="btn btn-primary" id="btnRoomJump">ไปที่ห้องนี้</button>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="section-heading">
       <div class="section-title">📈 สัดส่วนกลุ่มเสี่ยงแยกรายระดับชั้น</div>
     </div>
@@ -124,7 +133,21 @@ function render() {
     a.innerHTML = `<div class="tl-title">${esc(gradeLabel(g.grade))}</div><div class="tl-sub">นักเรียน ${g.summary.totalStudents} คน • ส่งแล้ว ${g.summary.totalDone} คน</div><span class="tl-badge">${g.tier.label}</span>`;
     tg.appendChild(a);
   });
+
+  // เติมรายชื่อห้องทั้งหมดให้ค้นหาได้ในช่อง "ไปที่ห้องโดยตรง"
+  $('roomJumpList').innerHTML = _adminData.progress
+    .map(p => `<option value="${esc(p.class)}"></option>`).join('');
 }
+
+function jumpToRoom() {
+  const room = $('roomJumpInput').value.trim();
+  if (!room) return;
+  const match = _adminData.progress.find(p => p.class === room);
+  if (!match) { alert('ไม่พบห้อง "' + room + '" ในระบบ กรุณาเลือกจากรายการที่ขึ้นให้ หรือตรวจสอบการพิมพ์อีกครั้ง'); return; }
+  window.location.href = `admin-cases.html?grade=${encodeURIComponent(parseGrade(room))}&room=${encodeURIComponent(room)}`;
+}
+$('btnRoomJump').addEventListener('click', jumpToRoom);
+$('roomJumpInput').addEventListener('keydown', e => { if (e.key === 'Enter') jumpToRoom(); });
 
 $('btnRefresh').addEventListener('click', () => init(true));
 $('btnLogout').addEventListener('click', handleLogout);

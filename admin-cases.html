@@ -51,7 +51,7 @@
     <div class="chip-row" id="chipRow"></div>
     <div class="table-scroll">
       <table class="data-table">
-        <thead>
+        <thead id="tableHead">
           <tr>
             <th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>ระดับชั้น/ห้อง</th><th>เลขที่</th>
             <th>PHQ-A (ซึมเศร้า)</th><th>ST5 (เครียด)</th><th>GAD-2 (วิตกกังวล)</th><th>ปัจจัยสังคม</th><th>8Q (ทำร้ายตัวเอง)</th>
@@ -83,9 +83,9 @@
 requireAdminSession();
 const GRADE  = getQueryParam('grade');
 const ROOM   = getQueryParam('room');
-const FILTER = getQueryParam('filter'); // '', 'watch', 'critical'
+const FILTER = getQueryParam('filter'); // '', 'watch', 'critical', 'normal', 'pending'
+const IS_ROOM = !!ROOM;
 
-let _adminData = null;
 let _currentScope = null;
 
 function chipUrl(f) {
@@ -98,19 +98,52 @@ function chipUrl(f) {
 }
 
 function init(force) {
-  fetchAdminData(data => { _adminData = data; render(); }, force);
+  if (IS_ROOM) {
+    fetchRoomRoster(ROOM, data => renderRoom(data));
+  } else {
+    fetchAdminData(data => renderAtRiskOnly(data), force);
+  }
 }
 
-function render() {
-  buildBreadcrumb($('breadcrumb'), { grade: GRADE, room: ROOM });
-
-  const scope = computeScope(_adminData, { grade: GRADE, room: ROOM, filter: FILTER });
+// ---------- โหมดห้องเดียว: แสดงนักเรียน "ทุกคน" ในห้องนั้น ----------
+function renderRoom(rosterData) {
+  const scope = rosterToScope(rosterData, FILTER);
   _currentScope = scope;
 
+  buildBreadcrumb($('breadcrumb'), { grade: GRADE, room: ROOM });
+  $('pageTitle').textContent = '📋 ' + scope.scopeLabel;
+  document.title = scope.scopeLabel + ' | ระบบประเมินสุขภาพจิตนักเรียน';
+  $('listTitle').textContent = '📋 ' + scope.listLabel;
+
+  $('statTotal').textContent = scope.summary.totalStudents;
+  $('statDone').textContent = scope.summary.totalDone;
+  $('statRisk').textContent = scope.summary.totalAtRisk;
+  $('statCritical').textContent = scope.summary.totalCritical;
+  $('riskBannerWrap').innerHTML = riskBannerHTML(scope);
+
+  const chips = [
+    { key: '', label: 'ทุกคน' },
+    { key: 'normal', label: 'ปกติ' },
+    { key: 'watch', label: 'เฝ้าระวัง' },
+    { key: 'critical', label: 'วิกฤต' },
+    { key: 'pending', label: 'ยังไม่ทำ' }
+  ];
+  $('chipRow').innerHTML = chips.map(c => `<a class="chip ${FILTER === c.key ? 'active' : ''}" href="${chipUrl(c.key)}">${esc(c.label)}</a>`).join('');
+
+  renderRosterTable('riskBody', scope.filteredRoster);
+  $('progressCard').style.display = 'none';
+}
+
+// ---------- โหมดทั้งโรงเรียน/ระดับชั้น: แสดงเฉพาะกลุ่มเสี่ยง (เหมือนเดิม) ----------
+function renderAtRiskOnly(adminData) {
+  const scope = computeScope(adminData, { grade: GRADE, room: ROOM, filter: FILTER });
+  _currentScope = scope;
+
+  buildBreadcrumb($('breadcrumb'), { grade: GRADE, room: ROOM });
   const filterLabel = FILTER === 'critical' ? ' (เฉพาะกลุ่มวิกฤต)' : FILTER === 'watch' ? ' (เฉพาะกลุ่มเฝ้าระวัง)' : '';
   $('pageTitle').textContent = '📋 ' + scope.scopeLabel + filterLabel;
-  $('listTitle').textContent = '🔴 รายชื่อนักเรียนกลุ่มเสี่ยง' + filterLabel;
   document.title = scope.scopeLabel + ' | ระบบประเมินสุขภาพจิตนักเรียน';
+  $('listTitle').textContent = '🔴 รายชื่อนักเรียนกลุ่มเสี่ยง' + filterLabel;
 
   $('statTotal').textContent = scope.summary.totalStudents;
   $('statDone').textContent = scope.summary.totalDone;
@@ -123,9 +156,7 @@ function render() {
     { key: 'watch', label: 'เฉพาะเฝ้าระวัง' },
     { key: 'critical', label: 'เฉพาะวิกฤต' }
   ];
-  $('chipRow').innerHTML = chips.map(c =>
-    `<a class="chip ${FILTER === c.key ? 'active' : ''}" href="${chipUrl(c.key)}">${esc(c.label)}</a>`
-  ).join('');
+  $('chipRow').innerHTML = chips.map(c => `<a class="chip ${FILTER === c.key ? 'active' : ''}" href="${chipUrl(c.key)}">${esc(c.label)}</a>`).join('');
 
   const list = scope.filteredAtRisk;
   const rb = $('riskBody'); rb.innerHTML = '';
@@ -134,7 +165,7 @@ function render() {
   } else {
     list.forEach((r, i) => {
       const tr = document.createElement('tr'); if (r.isCritical) tr.className = 'crit-row';
-      tr.innerHTML = `<td>${i + 1}${r.isCritical ? ' 🚨' : ''}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.class)}</td><td>${esc(r.number)}</td><td>${badgeFor(r.phqaStatus)} <small>${r.phqaScore}/27</small></td><td>${badgeFor(r.st5Status)} <small>${r.st5Score}/15</small></td><td>${badgeFor(r.gad2Status)} <small>${r.gad2Score}/6</small></td><td>${badgeFor(r.socStatus)}</td><td>${badgeFor(r.q8Status)} <small>${r.q8Score}คะแนน</small></td><td>${r.overall === 'เสี่ยงรุนแรง' ? '<span class="badge badge-red">🔴 เสี่ยงรุนแรงวิกฤต</span>' : '<span class="badge badge-orange">🟠 เสี่ยงปานกลาง</span>'}</td><td style="font-size:.8rem; max-width:250px; font-weight:600;">${esc(r.detail)}</td><td><small>${esc(r.timestamp)}</small></td>`;
+      tr.innerHTML = `<td>${i + 1}${r.isCritical ? ' 🚨' : ''}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.class)}</td><td>${esc(r.number)}</td><td>${badgeFor(r.phqaStatus)} <small>${r.phqaScore}/27</small></td><td>${badgeFor(r.st5Status)} <small>${r.st5Score}/15</small></td><td>${badgeFor(r.gad2Status)} <small>${r.gad2Score}/6</small></td><td>${badgeFor(r.socStatus)}</td><td>${badgeFor(r.q8Status)} <small>${r.q8Score}คะแนน</small></td><td>${r.isCritical ? '<span class="badge badge-red">🔴 วิกฤต</span>' : r.overall === 'เสี่ยงปานกลาง' ? '<span class="badge badge-orange">🟠 เฝ้าระวัง</span>' : '<span class="badge badge-green">🟢 ปกติ</span>'}</td><td style="font-size:.8rem; max-width:250px; font-weight:600;">${esc(r.detail)}</td><td><small>${esc(r.timestamp)}</small></td>`;
       rb.appendChild(tr);
     });
   }

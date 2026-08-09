@@ -3,7 +3,7 @@
 :root {
   --primary-gradient: linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%);
   --btn-gradient: linear-gradient(135deg, #6BCB77 0%, #4D96FF 100%);
-  --admin-gradient: linear-gradient(135deg, #475569 0%, #1E293B 100%);
+  --admin-gradient: linear-gradient(120deg, #1E293B 0%, #334155 55%, #1E3A5F 100%);
   --primary:    #4D96FF;
   --primary-lt: #6BCB77;
   --accent:     #FF6B6B;
@@ -11,52 +11,61 @@
   --warning:    #FFD93D;
   --danger:     #FF6B6B;
   --mid-risk:   #FF9F43;
-  --text:       #2C3E50;
-  --muted:      #95A5A6;
+  --text:       #1E293B;
+  --muted:      #64748B;
   --border:     #E2E8F0;
   --bg:         #F1F5F9;
   --white:      #FFFFFF;
-  --card-sh:    0 12px 30px rgba(77, 150, 255, 0.1);
-  --radius:     24px;
+  --card-sh:    0 10px 28px rgba(30, 58, 95, 0.08);
+  --radius:     20px;
 }
 
-html, body { width: 100%; font-family: 'Prompt', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; -webkit-tap-highlight-color: transparent; }
+html, body {
+  width: 100%; font-family: 'Prompt', sans-serif; color: var(--text); font-size: 16px; -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(1200px 500px at 10% -10%, #EAF2FF 0%, transparent 60%),
+              radial-gradient(1000px 500px at 100% 0%, #EAFBF0 0%, transparent 55%),
+              var(--bg);
+  min-height: 100vh;
+}
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.container-wide { width: 100%; max-width: 1250px; margin: 0 auto; padding: 16px; animation: fadeInUp 0.4s ease-out; }
+.container-wide { width: 100%; max-width: 1250px; margin: 0 auto; padding: 20px 16px 40px; animation: fadeInUp 0.4s ease-out; }
 
 /* ============================  แถบหัวหน้าแอดมิน  ============================ */
 .admin-topbar {
-  background: var(--admin-gradient); color: #fff; padding: 16px 20px; display: flex;
+  background: var(--admin-gradient); color: #fff; padding: 18px 24px; display: flex;
   align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.18);
+  border-bottom: 3px solid #6BCB77;
 }
-.admin-topbar .ttl { display: flex; align-items: center; gap: 10px; }
-.admin-topbar .ttl img { width: 34px; height: 34px; border-radius: 8px; background: #fff; padding: 3px; object-fit: contain; }
-.admin-topbar h1 { font-size: 1.05rem; font-weight: 500; }
-.admin-topbar p  { font-size: .75rem; opacity: .85; margin-top: 2px; font-weight: 400; }
+.admin-topbar .ttl { display: flex; align-items: center; gap: 12px; }
+.admin-topbar .ttl img { width: 38px; height: 38px; border-radius: 10px; background: #fff; padding: 4px; object-fit: contain; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.admin-topbar h1 { font-size: 1.08rem; font-weight: 600; letter-spacing: .2px; }
+.admin-topbar p  { font-size: .76rem; opacity: .82; margin-top: 3px; font-weight: 400; }
 .admin-topbar .actions { display: flex; gap: 8px; }
 .admin-topbar .actions .btn { width: auto; padding: 9px 16px; font-size: .82rem; }
 
 /* ============================  เบรดครัมบ์นำทาง  ============================ */
-.breadcrumb { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .85rem; margin: 16px 0; color: var(--muted); }
+.breadcrumb { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .85rem; margin: 18px 0 14px; color: var(--muted); }
 .breadcrumb a { color: var(--primary); text-decoration: none; font-weight: 500; }
 .breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb .bc-current { color: var(--text); font-weight: 500; }
+.breadcrumb .bc-current { color: var(--text); font-weight: 600; }
 .breadcrumb .bc-sep { color: var(--muted); }
 
 /* ============================  การ์ดและปุ่ม (เหมือน index.html)  ============================ */
-.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-sh); padding: 22px 20px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.01); }
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-sh); padding: 24px 22px; margin-bottom: 18px; border: 1px solid #EEF2F7; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; width: 100%; }
-.section-title { font-size: 1.1rem; font-weight: 500; color: var(--text); }
+.section-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 14px; font-size: 0.9rem; font-weight: 500; font-family: inherit; border: none; cursor: pointer; transition: all 0.2s; width: auto; text-align: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 14px; font-size: 0.9rem; font-weight: 500; font-family: inherit; border: none; cursor: pointer; transition: all 0.18s ease; width: auto; text-align: center; }
+.btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
 .btn:active { transform: scale(0.97); }
 .btn-outline { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.5); color: #fff; }
-.btn-outline:hover { background: rgba(255,255,255,0.2); }
-.btn-export { background: #047857; color: #fff; }
+.btn-outline:hover { background: rgba(255,255,255,0.22); }
+.btn-primary { background: var(--primary-gradient); color: #fff; box-shadow: 0 6px 16px rgba(77,150,255,0.28); }
+.btn-export { background: #047857; color: #fff; box-shadow: 0 6px 16px rgba(4,120,87,0.22); }
 .btn-excel  { background: #15803D; color: #fff; }
 .btn-secondary { background: #475569; color: #fff; }
 
@@ -118,7 +127,17 @@ html, body { width: 100%; font-family: 'Prompt', sans-serif; background: var(--b
 .mini-fill { height: 100%; border-radius: 999px; }
 .mini-pct  { font-size: .82rem; font-weight: 500; min-width: 45px; text-align: right; }
 
-/* ============================  ชิปตัวกรองด่วน (แสดงเฉพาะเฝ้าระวัง/วิกฤต)  ============================ */
+/* ============================  แถบค้นหา/กรอง (เช่น ไปที่ห้องโดยตรง)  ============================ */
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+.filter-bar input[type="text"] {
+  padding: 10px 14px; border: 2px solid var(--border); border-radius: 12px;
+  font-family: inherit; font-size: .9rem; color: var(--text); background: var(--white); font-weight: 400;
+  flex: 1; min-width: 220px; cursor: text;
+}
+.filter-bar input[type="text"]:focus { outline: none; border-color: var(--primary); }
+.filter-bar .btn { width: auto; }
+
+/* ============================  ชิปตัวกรองด่วน  ============================ */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .chip { padding: 8px 16px; border-radius: 999px; font-size: .82rem; font-weight: 500; border: 2px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; text-decoration: none; }
 .chip.active { border-color: var(--primary); background: #EBF3FF; color: var(--primary); }
