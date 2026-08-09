@@ -4,7 +4,7 @@
 // ===================================================
 
 // วางลิงก์ /exec ที่ได้จากการ Deploy Apps Script (ผูกกับชีตใหม่ SKBMENTALHEALTH) แทนที่ตรงนี้
-const BACKEND_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbx56qhXXK5LoaZNltNFSKCoH9uZL7e8DgHBQSj8CRbqRow9RCBMhpZoJAaXzRB0NcWU/exec';
 
 const $ = id => document.getElementById(id);
 
