@@ -183,35 +183,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
 
 @media (max-width: 480px) { .scale4-options { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
 
-/* ============================  ADMIN CONSOLE UI  ============================ */
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
-.stat-card { background: var(--white); border-radius: var(--radius); padding: 22px; box-shadow: var(--card-sh); text-align: center; border: 1px solid rgba(0,0,0,0.01); }
-.stat-val   { font-size: 2.6rem; font-weight: 500; line-height: 1.1; }
-.stat-card.c-blue .stat-val { color: var(--primary); }
-.c-green .stat-val { color: var(--success); }
-.c-orange .stat-val { color: var(--mid-risk); }
-.c-red .stat-val { color: var(--danger); }
-
-.data-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-.data-table th { background: var(--primary-gradient); color: #fff; padding: 12px 14px; text-align: left; white-space: nowrap; font-weight: 500; }
-.data-table td { padding: 12px 14px; border-bottom: 1px solid #E2E8F0; }
-.data-table tr.crit-row td { background: #FFF5F5; border-left: 5px solid var(--accent); }
-.table-scroll { overflow-x: auto; border-radius: 16px; box-shadow: var(--card-sh); border: 1px solid var(--border); width: 100%; margin-bottom: 16px; }
-
-.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 500; }
-.badge-red     { background: #FEE2E2; color: var(--danger); }
-.badge-orange  { background: #FFedd5; color: var(--mid-risk); }
-.badge-green   { background: #D1FAE5; color: var(--success); }
-.badge-gray    { background: #F1F5F9; color: var(--muted); }
-
-.section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; width: 100%; }
-.section-title   { font-size: 1.15rem; font-weight: 500; color: var(--text); }
-
-.mini-bar-wrap { display: flex; align-items: center; gap: 10px; }
-.mini-bar      { flex: 1; height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
-.mini-fill     { height: 100%; border-radius: 999px; }
-.mini-pct      { font-size: .82rem; font-weight: 500; min-width: 45px; text-align: right; }
-
 /* ============================  ระบบตรรกะ LOADER คำสั่งหมุนประมวลผลหน้าต่าง  ============================ */
 .loader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
 .loader.show { display: flex; }
@@ -400,59 +371,6 @@ input:focus { outline: none; border-color: var(--primary); background: var(--whi
     </div>
   </div>
 
-  <div class="page" id="pageAdmin">
-    <div class="container-wide">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
-        <div>
-          <h2 style="font-size:1.4rem; color:var(--text); font-weight:600;">📊 คอนโซลควบคุมระบบดูแลช่วยเหลือแอดมิน (Admin Console)</h2>
-          <p style="font-size:.88rem; color:var(--muted); font-weight:400;">โรงเรียนชลบุรี "สุขบท" | ระบบรายงานผลกลุ่มเสี่ยงและสถิติการดำเนินงานรายห้องเรียน</p>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn btn-primary" id="btnRefresh" style="background:#475569; box-shadow:none;">🔄 รีเฟรชฐานข้อมูล</button>
-          <button class="btn btn-outline" onclick="handleLogout()">ออกจากหน้าควบคุม</button>
-        </div>
-      </div>
-
-      <div class="summary-grid">
-        <div class="stat-card c-blue"><div class="stat-val" id="statTotal">—</div><div class="stat-label">จำนวนนักเรียนทั้งโรงเรียน</div></div>
-        <div class="stat-card c-green"><div class="stat-val" id="statDone">—</div><div class="stat-label">ส่งแบบประเมินสำเร็จแล้ว</div></div>
-        <div class="stat-card c-orange"><div class="stat-val" id="statRisk">—</div><div class="stat-label">เคสเฝ้าระวัง (เสี่ยงปานกลาง)</div></div>
-        <div class="stat-card c-red"><div class="stat-val" id="statCritical">—</div><div class="stat-label">🚨 เคสฉุกเฉินวิกฤต (เสี่ยงรุนแรง)</div></div>
-      </div>
-
-      <div class="card">
-        <div class="section-heading">
-          <div class="section-title">🔴 ตารางรายชื่อเคสนักเรียนกลุ่มเสี่ยง (เรียงตามลำดับความรุนแรงวิกฤต)</div>
-          <button class="btn btn-export" id="btnExport">📥 ส่งออกรายงานกลุ่มเสี่ยง (Excel/CSV)</button>
-        </div>
-        <div class="table-scroll">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>ระดับชั้น/ห้อง</th><th>เลขที่</th>
-                <th>ผล 2Q</th><th>PHQ-A (ซึมเศร้า)</th><th>ST5 (เครียด)</th><th>GAD-2 (วิตกกังวล)</th><th>ปัจจัยสังคม</th><th>8Q (ทำร้ายตัวเอง)</th>
-                <th>ประเมินรวม</th><th>รายละเอียดพฤติกรรม</th><th>เวลาบันทึกข้อมูล</th>
-              </tr>
-            </thead>
-            <tbody id="riskBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-heading"><div class="section-title">📈 แดชบอร์ดติดตามความคืบหน้าการส่งงานแยกรายห้องเรียน (ทั้งโรงเรียน)</div></div>
-        <div class="table-scroll">
-          <table class="data-table">
-            <thead>
-              <tr><th>ระดับชั้นและห้องเรียน</th><th>รายชื่อทั้งหมดในชีต</th><th>ดำเนินงานส่งแล้ว</th><th>ค้างส่งแบบประเมิน</th><th style="min-width:220px;">สัดส่วนความคืบหน้าคิดเป็นเปอร์เซ็นต์</th></tr>
-            </thead>
-            <tbody id="progBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="page-footer">
     โรงเรียนชลบุรี "สุขบท" | กลุ่มบริหารงานกิจการนักเรียน<br>
     พัฒนาเว็บโดย นายมีโชค ผลชู
@@ -468,7 +386,6 @@ let currentStudent = null;
 let answers2Q = {};
 let answersSecond = {};
 let totalSecond = 0;
-let _adminData = null;
 let studentHistoryMap = null; 
 
 const $ = id => document.getElementById(id);
@@ -499,7 +416,7 @@ function switchLoginTab(type) {
 
 function handleLogout() {
   sessionStorage.clear();
-  currentStudent = null; answers2Q = {}; answersSecond = {}; _adminData = null; studentHistoryMap = null;
+  currentStudent = null; answers2Q = {}; answersSecond = {}; studentHistoryMap = null;
   $('fStudentId').value = ''; $('fPassword').value = ''; $('fAdminPass').value = '';
   hideAlert('loginError'); hideAlert('adminLoginError'); hideAlert('err2Q'); hideAlert('err2nd');
   $('historyAlert2Q').classList.remove('show');
@@ -671,36 +588,6 @@ function validateUnanswered(questions, answersMap) {
   return true;
 }
 
-function refreshAdminData() {
-  showLoader('กำลังอัปเดตสถิติฐานข้อมูลล่าสุด...');
-  call('getAdminData', [], data => {
-    hideLoader(); if(!data.success) { alert(data.error); return; }
-    _adminData = data;
-    $('statTotal').textContent = data.summary.totalStudents; 
-    $('statDone').textContent = data.summary.totalDone; 
-    $('statRisk').textContent = data.summary.totalAtRisk; 
-    $('statCritical').textContent = data.summary.totalCritical;
-    
-    const rb = $('riskBody'); rb.innerHTML = '';
-    if(!data.atRisk.length) {
-      rb.innerHTML = `<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--muted);font-weight:bold;">✅ ผ่านเกณฑ์ประเมินระดับปลอดภัย ไม่พบข้อมูลกลุ่มเสี่ยงในปัจจุบัน</td></tr>`;
-    } else {
-      data.atRisk.forEach((r, i) => {
-        const tr = document.createElement('tr'); if(r.isCritical) tr.className = 'crit-row';
-        tr.innerHTML = `<td>${i+1}${r.isCritical?' 🚨':''}</td><td>${esc(r.id)}</td><td><strong>${esc(r.name)}</strong></td><td>${esc(r.class)}</td><td>${esc(r.number)}</td><td><span class="badge badge-orange">เสี่ยง</span></td><td>${badgeFor(r.phqaStatus)} <small>${r.phqaScore}/27</small></td><td>${badgeFor(r.st5Status)} <small>${r.st5Score}/15</small></td><td>${badgeFor(r.gad2Status)} <small>${r.gad2Score}/6</small></td><td>${badgeFor(r.socStatus)}</td><td>${badgeFor(r.q8Status)} <small>${r.q8Score}คะแนน</small></td><td>${r.overall === 'เสี่ยงรุนแรง' ? '<span class="badge badge-red">🔴 เสี่ยงรุนแรงวิกฤต</span>' : '<span class="badge badge-orange">🟠 เสี่ยงปานกลาง</span>'}</td><td style="font-size:.8rem; max-width:250px; font-weight:600;">${esc(r.detail)}</td><td><small>${esc(r.timestamp)}</small></td>`;
-        rb.appendChild(tr);
-      });
-    }
-    
-    const pb = $('progBody'); pb.innerHTML = '';
-    data.progress.forEach(row => {
-      const col = row.percent >= 80 ? 'var(--success)' : row.percent >= 50 ? 'var(--warning)' : 'var(--accent)';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td><strong>ห้อง ${esc(row.class)}</strong></td><td>${row.total} คน</td><td>${row.done} คน</td><td>${row.total - row.done} คน</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${row.percent}%;background:${col};"></div></div><span class="mini-pct" style="color:${col};">${row.percent}%</span></div></td>`;
-      pb.appendChild(tr);
-    });
-  });
-}
 
 $('btnLogin').addEventListener('click', () => {
   const id = $('fStudentId').value.trim(); const pw = $('fPassword').value.trim();
@@ -771,28 +658,23 @@ $('btn2ndSubmit').addEventListener('click', () => {
 
 $('btnAdminLogin').addEventListener('click', () => {
   const pw = $('fAdminPass').value.trim(); if(!pw) { showAlert('adminLoginError','กรุณากรอกรหัสผ่านควบคุมความปลอดภัยแอดมิน'); return; }
-  showLoader('กำลังเข้าสู่ระบบและคำนวณสถิติแดชบอร์ด...');
+  showLoader('กำลังเข้าสู่ระบบ...');
   call('verifyAdmin', [pw], res => {
     if(res.success) {
       sessionStorage.setItem('role', 'admin');
-      showPage('pageAdmin');
-      refreshAdminData();
+      sessionStorage.removeItem('adminDataCache');
+      window.location.href = 'admin-school.html';
     } else { hideLoader(); showAlert('adminLoginError', res.error); }
   });
 });
-
-$('btnRefresh').addEventListener('click', refreshAdminData);
-
-function badgeFor(s) { if (!s || s === 'ไม่ได้ทำ' || s === 'ปกติ') return '<span class="badge badge-green">ปกติ</span>'; if (s.includes('รุนแรง') || s.includes('วิกฤต') || s.includes('เสี่ยงรุนแรง')) return `<span class="badge badge-red">${esc(s)}</span>`; return `<span class="badge badge-orange">${esc(s)}</span>`; }
 
 // ระบบตรวจจับพฤติกรรม F5 เพื่อดึงหน่วยความจำวิเศษกลับคืนมาแรนเดอร์หน้าจอเดิมอัตโนมัติ
 window.addEventListener('DOMContentLoaded', () => {
   const savedRole = sessionStorage.getItem('role');
   const savedPage = sessionStorage.getItem('currentPage');
-  
+
   if (savedRole === 'admin') {
-    if (savedPage) { showPage(savedPage); } else { showPage('pageAdmin'); }
-    refreshAdminData();
+    window.location.href = 'admin-school.html';
   } else if (savedRole === 'student') {
     currentStudent = JSON.parse(sessionStorage.getItem('studentData'));
     
