@@ -72,7 +72,7 @@ function fetchAdminData(cb, forceRefresh) {
     } catch (e) {}
   }
   showLoader('กำลังดึงข้อมูลล่าสุดจากฐานข้อมูล...');
-  call('getAdminData', [], data => {
+  call('getAdminData', [!!forceRefresh], data => {
     hideLoader();
     if (!data.success) { alert(data.error); return; }
     sessionStorage.setItem('adminDataCache', JSON.stringify({ ts: Date.now(), data }));
