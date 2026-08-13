@@ -30,20 +30,36 @@ function showLoader(msg) { $('loaderMsg').textContent = msg || 'กำลัง�
 function hideLoader() { $('loader').classList.remove('show'); }
 
 // ---------- เรียก Apps Script backend ----------
-function call(fn, args, cb) {
+function call(fn, args, cb, _retriesLeft, _isRetry) {
+  if (_retriesLeft === undefined) _retriesLeft = 3;
   if (!BACKEND_URL || BACKEND_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
     hideLoader();
     alert('ระบบขัดข้อง ยังไม่ได้เปลี่ยนลิงก์ BACKEND_URL ในไฟล์ admin-common.js ครับ');
     return;
   }
-  fetch(BACKEND_URL, {
-    method: 'POST', mode: 'cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: fn, arguments: args })
-  })
-  .then(r => r.json())
-  .then(res => cb(res))
-  .catch(err => { hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน ' + err.message); });
+  const attemptNum = 4 - _retriesLeft;
+  const jitter = _isRetry ? 0 : Math.floor(Math.random() * 500);
+  setTimeout(() => {
+    fetch(BACKEND_URL, {
+      method: 'POST', mode: 'cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: fn, arguments: args })
+    })
+    .then(r => r.text())
+    .then(text => {
+      let res;
+      try { res = JSON.parse(text); }
+      catch (e) { throw new Error('เซิร์ฟเวอร์ตอบกลับข้อมูลผิดปกติ (อาจมีคนใช้งานพร้อมกันเยอะเกินไปในขณะนี้)'); }
+      cb(res);
+    })
+    .catch(err => {
+      if (_retriesLeft > 0) {
+        setTimeout(() => call(fn, args, cb, _retriesLeft - 1, true), 900 * attemptNum);
+        return;
+      }
+      hideLoader(); alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์หลังบ้าน กรุณาลองใหม่อีกครั้ง (' + err.message + ')');
+    });
+  }, jitter);
 }
 
 // ---------- ดึงข้อมูลแอดมิน พร้อมแคชสั้นๆ ใน sessionStorage กันเรียกซ้ำเวลาเปลี่ยนหน้าเร็วๆ ----------
